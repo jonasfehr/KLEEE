@@ -11,7 +11,8 @@
 #include "Modulator.h"
 
 enum MovementPatterns{
-    FORCES,
+    STEERING,
+    ATTRACTIONS,
     ZONEBOUNCE,
     ZONEZIGZACK,
     ZONESPIRAL,
@@ -21,24 +22,89 @@ enum MovementPatterns{
     SINUS
 };
 
+class Attractor{
+public:
+    Attractor(){
+        pos = glm::vec3(ofRandom(80)/100.0+0.1, ofRandom(80)/100.0+0.1, 0);
+        mass = 0.000001;
+        G = 1;
+        bActive = true;
+    }
+    
+    glm::vec3 getAttraction(glm::vec3 pos){
+        glm::vec3 force = this->pos - pos;
+        float distance = force.length();
+        
+        
+        distance = glm::clamp(distance,0.01f,0.4f);
+        
+        
+        force = glm::normalize(force);
+        float strength = (G * mass) / (distance * distance);
+        force = force * strength;
+        return force;
+    }
+    
+    bool isActive(){ return bActive;}
+    void deactivate(){ bActive = false;}
+    void activate(){ bActive = true;}
+    void setPos(glm::vec3 pos ){ this->pos = pos;}
+    glm::vec3 getPos(){ return pos;}
+
+private:
+    bool bActive;
+    glm::vec3 pos;
+    float mass;
+    float G;
+
+};
+
+class RandomWithoutRepeate{
+public:
+    
+    void add(){
+        int newNumber = array.size();
+        array.push_back(newNumber);
+        std::random_shuffle ( array.begin(), array.end() );
+    }
+    
+    int getNext(){
+        index++;
+        if(index>=array.size()){
+            std::random_shuffle ( array.begin(), array.end() );
+            index = 0;
+        }
+        return array[ index ];
+    }
+private:
+    int index = 0;
+    vector<int> array;
+};
+
 class Walker{
 public:
-    ofParameter<int> movementPattern{"MovementPattern", FORCES, 0, SINUS};
+    ofParameter<int> movementPattern{"MovementPattern", STEERING, 0, SINUS};
     ofParameter<float> speed{"Speed", 0.001f, 0.0f, 0.01f};
+    ofParameter<float> maxForce{"maxForce", 0.001f, 0.0f, 0.01f};
+    ofParameter<float> maxRepulsion{"maxRepulsion", 0.001f, 0.0f, 0.01f};
+    ofParameter<float> maxRepulsionSpeed{"maxRepulsionSpeed", 0.001f, 0.0f, 0.01f};
+    ofParameter<float> minDistancePred{"minDistancePred", 0.1f, 0.0f, 1.0f};
     ofParameter<int> length{"Length", 200, 1, 1000};
     ofParameter<bool> doModulate{"doModulate", true};
     ofParameter<ofFloatColor> lineColor{ "lineColor", ofFloatColor::cyan };
 
-    ofParameterGroup parameters{"Walker", movementPattern, speed, length, doModulate,lineColor};
+    ofParameterGroup parameters{"Walker", movementPattern, speed, maxForce, maxRepulsion, maxRepulsionSpeed, minDistancePred, length, doModulate,lineColor};
 
 
     glm::vec3 pos;
     glm::vec3 vel;
     glm::vec3 target;
     
-    
-    int prevMP = movementPattern.get();
+    RandomWithoutRepeate random;
 
+    vector<Attractor> attractors;
+    int activeAttractor;
+    
     vector<glm::vec3> history;
     
     ofPolyline zone;
@@ -63,6 +129,13 @@ public:
         // startPos
         pos = glm::vec3(0.5f, 0.5f, 0.0f);
         vel = glm::vec3(0.0f, 0.0f, 0.0f);
+        
+        for(int i = 0; i < 10; i++){
+            Attractor attractor;
+            attractors.push_back(attractor);
+            random.add();
+        }
+        target=attractors[random.getNext()].getPos();
     }
     
     void setup(){
@@ -75,16 +148,105 @@ public:
         this->zone = zone;
     }
     
+    void seek(glm::vec3 target) {
+        glm::vec3 desired = target - pos;
+        desired = glm::normalize(desired);
+        desired = desired * speed.get();
+        glm::vec3 steer = desired - vel;
+        if(glm::length(steer)>maxForce.get()) steer = glm::normalize(steer)*maxForce.get();
+        vel = vel + steer;
+    }
+    
+    void avoid(glm::vec3 target, float minDistance) {
+        
+        float distance = glm::distance(pos,target);
+//        distance = glm::clamp(distance,0.01f,0.4f);
+        if(distance<minDistance){
+            glm::vec3 predator = target - pos;
+
+            predator = glm::normalize(predator);
+//            predator = predator / distance;
+            
+            predator = predator * maxRepulsionSpeed.get();
+            glm::vec3 steer = (predator - vel)*(-1.0);
+            if(glm::length(steer)>maxRepulsion.get()) steer = glm::normalize(steer)*maxRepulsion.get();
+            vel = vel + steer;
+        }
+
+    }
+    
+    
     void update(){
         // Noise based Movement
         
         switch(movementPattern){
-            case FORCES:
+            case STEERING:
             {
-                target = zone.getCentroid2D();
-                vel = normVecToTarget(target);
+                seek(target);
+                
+                // AVOID WALLS
+                float boarder = 0.025;
+                bool bBorders = false;
+                glm::vec3 desired = glm::vec3(0);
+                if(pos.x > 1-boarder){ bBorders = true; desired = glm::vec3(-speed.get(),vel.y,0);}
+                if(pos.x < boarder)  { bBorders = true; desired = glm::vec3(speed.get(),vel.y,0);}
+                if(pos.y > 1-boarder){ bBorders = true; desired = glm::vec3(vel.x,-speed.get(),0);}
+                if(pos.y < boarder)  { bBorders = true; desired = glm::vec3(vel.x,speed.get(),0);}
+                if(bBorders){
+                    glm::vec3 steer = desired - vel;
+                    if(glm::length(steer)>speed.get()) steer = glm::normalize(steer)*speed.get();
+                    vel = vel + steer;
+                }
+                
+                for(int i = 0; i< attractors.size(); i++){
+                    if(i!=activeAttractor){
+                        avoid(attractors[i].getPos(), minDistancePred);
+//                        glm::vec2 repulsion = - attractors[i].getAttraction(pos);
+//                        repulsion = repulsion * maxRepulsion.get();
+//                        if(glm::length(repulsion)>maxRepulsion.get()) repulsion = glm::normalize(repulsion)*maxRepulsion.get();
+//                        vel = vel + repulsion;
+                        
+                    }
+                }
 
-                vel = glm::normalize(vel);
+                
+                if(glm::distance(pos,target)<0.01){
+                    activeAttractor=random.getNext();
+                    
+                    // activate all attractors exept the one which is target
+                    for(auto & attractor : attractors){
+                        attractor.activate();
+                    }
+                    attractors[activeAttractor].deactivate();
+                    
+                    target=attractors[activeAttractor].getPos();
+
+                }
+            }
+                break;
+            case ATTRACTIONS:
+            {
+                vel = vel + attractors[activeAttractor].getAttraction(pos);
+//
+//                for(auto & attractor : attractors){
+//                    if(attractor.isActive()){
+//                        vel = vel + attractor.getAttraction(pos);
+//                        if(glm::distance(pos,attractor.getPos())<0.1){
+//                            attractor.deactivate();
+//                        }
+//                    }
+//                }
+                if(glm::distance(pos,target)<0.1){
+                    activeAttractor=random.getNext();
+                    
+                    target=attractors[activeAttractor].getPos();
+                    for(auto & attractor : attractors){
+                        attractor.activate();
+                    }
+                }
+//                target = zone.getCentroid2D();
+//                vel = vel + glm::distance(pos,target)*normVecToTarget(target);
+//                vel = glm::normalize(vel);
             }
                 break;
                 
@@ -207,10 +369,8 @@ public:
         }
         
         
-        cout << vel << endl;
-
+        if(glm::length(vel)>speed)   vel = glm::normalize(vel)*(float)speed;
         
-        vel = vel*(float)speed;
         pos = pos + vel;
 
 //        pos = pos + glm::vec3();
@@ -269,19 +429,25 @@ public:
             ofSetColor(ofColor::red);
             ofDrawCircle(pos, 5./w);
 //            ofDrawCircle(pos+vel*10, 5./w);
-            
-            ofSetColor(ofColor::blue);
-            ofDrawCircle(target, 5./w);
 
             ofSetColor(lineColor.get());
             poly.draw();
             
+            for(auto & attractor: attractors){
+                ofSetColor(ofColor::orange);
+                ofDrawCircle(attractor.getPos(), 5./w);
+            }
+            
+            ofSetColor(ofColor::blue);
+            ofDrawCircle(target, 5./w);
 
         }
         ofPopMatrix();
         
         ofSetColor(ofColor::orange);
         modulator.draw(pos.x*w+x, pos.y*h+y, w, h);
+        
+        
 
         
     }

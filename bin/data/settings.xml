@@ -1,23 +1,27 @@
 <?xml version="1.0"?>
 <group>
 	<Walker>
-		<MovementPattern>2</MovementPattern>
-		<Speed>0.00234694</Speed>
-		<Length>627</Length>
+		<MovementPattern>0</MovementPattern>
+		<Speed>0.01</Speed>
+		<Length>330</Length>
 		<doModulate>1</doModulate>
-		<lineColor>0.909722, 0.869814, 0.857627, 1</lineColor>
+		<lineColor>0, 1, 1, 1</lineColor>
 		<Modulator>
-			<doFollowDirection>1</doFollowDirection>
-			<xAmplitude>0.0614744</xAmplitude>
-			<xSpeed>1</xSpeed>
+			<doFollowDirection>0</doFollowDirection>
+			<xAmplitude>0</xAmplitude>
+			<xSpeed>0.0628905</xSpeed>
 			<yAmplitude>0</yAmplitude>
-			<ySpeed>0</ySpeed>
+			<ySpeed>0.0680966</ySpeed>
 		</Modulator>
+		<maxForce>0.00143136</maxForce>
+		<maxRepulsion>0.00530891</maxRepulsion>
+		<maxRepulsionSpeed>0.00663544</maxRepulsionSpeed>
+		<minDistancePred>0.0663265</minDistancePred>
 	</Walker>
 	<BlobFinder>
 		<drawColorImg>0</drawColorImg>
 		<drawGreyImg>0</drawGreyImg>
-		<drawBlobs>1</drawBlobs>
+		<drawBlobs>0</drawBlobs>
 	</BlobFinder>
 	<Laser_-_>
 		<isActivated>0</isActivated>
@@ -51,34 +55,36 @@
 		</IldaFrame_Params>
 	</Laser_-_>
 	<Laser>
-		<isActivated>1</isActivated>
+		<isActivated>0</isActivated>
 		<LASER_PPSx1000>30</LASER_PPSx1000>
 	</Laser>
 	<IldaFrame_Params>
 		<PolyProcessor>
 			<smoothAmount>0</smoothAmount>
 			<optimizeTolerance>0</optimizeTolerance>
-			<targetPointCount>744</targetPointCount>
-			<spacing>0.0324853</spacing>
+			<targetPointCount>500</targetPointCount>
+			<spacing>0.00627758</spacing>
 		</PolyProcessor>
 		<Draw_Lines>1</Draw_Lines>
 		<Draw_Points>1</Draw_Points>
-		<Draw_Point_nums>1</Draw_Point_nums>
-		<Draw_finalPoints>1</Draw_finalPoints>
+		<Draw_Point_nums>0</Draw_Point_nums>
+		<Draw_finalPoints>0</Draw_finalPoints>
 		<Color>1, 1, 1, 1</Color>
-		<start_Blanks>13</start_Blanks>
-		<start_Count>0</start_Count>
-		<end_Count>0</end_Count>
-		<end_Blanks>0</end_Blanks>
+		<start_Blanks>10</start_Blanks>
+		<start_Count>10</start_Count>
+		<end_Count>10</end_Count>
+		<end_Blanks>10</end_Blanks>
 		<Do_Cap_X>0</Do_Cap_X>
 		<Do_Cap_Y>0</Do_Cap_Y>
 		<useColorMap>0</useColorMap>
 		<doDisplace>0</doDisplace>
 		<displaceAmount>0</displaceAmount>
-		<Do_Flip_X>1</Do_Flip_X>
-		<Do_Flip_Y>1</Do_Flip_Y>
+		<Do_Flip_X>0</Do_Flip_X>
+		<Do_Flip_Y>0</Do_Flip_Y>
 		<Offset>0, 0</Offset>
 		<Scale>0, 0</Scale>
 		<masterColor>1, 1, 1, 1</masterColor>
+		<doFade>1</doFade>
+		<fadeLength>0.290816</fadeLength>
 	</IldaFrame_Params>
 </group>

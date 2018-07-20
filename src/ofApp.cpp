@@ -3,6 +3,8 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     
+    ofSetFrameRate(60);
+    
 //    syphonIn.setup("Normal", "MadMapper");
     
     walker.setup();
@@ -95,7 +97,14 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+    if(key=='r'){
+        walker.attractors.clear();
+        for(int i = 0; i < 5; i++){
+            Attractor attractor;
+            walker.attractors.push_back(attractor);
+        }
+        walker.target=walker.attractors[ofRandom(walker.attractors.size())].getPos();
+    }
 }
 
 //--------------------------------------------------------------
