@@ -1,0 +1,7 @@
+ofxCv
+ofxCvCameraProjectorCalibration
+ofxGui
+ofxIlda
+ofxIpCamStreamer
+ofxOpenCvHomebrew
+ofxRayComposer

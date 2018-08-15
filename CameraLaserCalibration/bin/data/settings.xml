@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<group>
+	<Current_State>PROJECTOR_STATIC</Current_State>
+	<Application>
+		<Difference_min_between_frames>4</Difference_min_between_frames>
+		<Time_min_between_captures>2</Time_min_between_captures>
+	</Application>
+	<Boards_Params>
+		<Num_boards_Camera>20</Num_boards_Camera>
+		<Num_boards_Projector>12</Num_boards_Projector>
+		<Num_boards_before_cleaning>8</Num_boards_before_cleaning>
+		<Num_boards_before_dynamic_proj>5</Num_boards_before_dynamic_proj>
+		<Max_reproj_error_Camera>0.2</Max_reproj_error_Camera>
+		<Max_reproj_error_Projector>0.6</Max_reproj_error_Projector>
+	</Boards_Params>
+	<Processing_Params>
+		<Circle_image_threshold>230</Circle_image_threshold>
+	</Processing_Params>
+	<group />
+	<IldaFrame_Params>
+		<PolyProcessor>
+			<smoothAmount>0</smoothAmount>
+			<optimizeTolerance>0</optimizeTolerance>
+			<targetPointCount>500</targetPointCount>
+			<spacing>0</spacing>
+		</PolyProcessor>
+		<Draw_Lines>1</Draw_Lines>
+		<Draw_Points>1</Draw_Points>
+		<Draw_Point_nums>0</Draw_Point_nums>
+		<Draw_finalPoints>0</Draw_finalPoints>
+		<masterColor>1, 1, 1, 1</masterColor>
+		<start_Blanks>10</start_Blanks>
+		<start_Count>4</start_Count>
+		<end_Count>0</end_Count>
+		<end_Blanks>0</end_Blanks>
+		<Do_Cap_X>0</Do_Cap_X>
+		<Do_Cap_Y>0</Do_Cap_Y>
+		<useColorMap>0</useColorMap>
+		<doDisplace>0</doDisplace>
+		<displaceAmount>0</displaceAmount>
+		<doFade>0</doFade>
+		<fadeLength>0</fadeLength>
+		<Do_Flip_X>0</Do_Flip_X>
+		<Do_Flip_Y>0</Do_Flip_Y>
+		<Offset>0, 0</Offset>
+		<Scale>0, 0</Scale>
+	</IldaFrame_Params>
+</group>
+<Laser>
+	<group>
+		<showTestRect>0</showTestRect>
+		<IldaFrame_Params>
+			<PolyProcessor>
+				<smoothAmount>0</smoothAmount>
+				<optimizeTolerance>0</optimizeTolerance>
+				<targetPointCount>500</targetPointCount>
+				<spacing>0</spacing>
+			</PolyProcessor>
+			<Draw_Lines>1</Draw_Lines>
+			<Draw_Points>1</Draw_Points>
+			<Draw_Point_nums>0</Draw_Point_nums>
+			<Draw_finalPoints>0</Draw_finalPoints>
+			<masterColor>1, 1, 1, 1</masterColor>
+			<start_Blanks>9</start_Blanks>
+			<start_Count>4</start_Count>
+			<end_Count>0</end_Count>
+			<end_Blanks>0</end_Blanks>
+			<Do_Cap_X>0</Do_Cap_X>
+			<Do_Cap_Y>0</Do_Cap_Y>
+			<useColorMap>0</useColorMap>
+			<doDisplace>0</doDisplace>
+			<displaceAmount>0</displaceAmount>
+			<doFade>0</doFade>
+			<fadeLength>0</fadeLength>
+			<Do_Flip_X>0</Do_Flip_X>
+			<Do_Flip_Y>0</Do_Flip_Y>
+			<Offset>0, 0</Offset>
+			<Scale>0, 0</Scale>
+		</IldaFrame_Params>
+	</group>
+</Laser>
+<Calibration>
+	<group>
+		<Current_State>PROJECTOR_STATIC</Current_State>
+		<Application>
+			<Difference_min_between_frames>4</Difference_min_between_frames>
+			<Time_min_between_captures>2</Time_min_between_captures>
+		</Application>
+		<Boards_Params>
+			<Num_boards_Camera>20</Num_boards_Camera>
+			<Num_boards_Projector>12</Num_boards_Projector>
+			<Num_boards_before_cleaning>8</Num_boards_before_cleaning>
+			<Num_boards_before_dynamic_proj>5</Num_boards_before_dynamic_proj>
+			<Max_reproj_error_Camera>0.2</Max_reproj_error_Camera>
+			<Max_reproj_error_Projector>0.6</Max_reproj_error_Projector>
+		</Boards_Params>
+		<Processing_Params>
+			<alternative_Processing>0</alternative_Processing>
+			<Circle_image_threshold>220</Circle_image_threshold>
+		</Processing_Params>
+	</group>
+</Calibration>

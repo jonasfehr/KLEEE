@@ -92,6 +92,7 @@ void ofApp::draw(){
 ////        this->camera.enableMouseInput();
 //    }
     
+    
     gui.draw();
 }
 
