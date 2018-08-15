@@ -30,11 +30,11 @@
 		C602002DE761F9B52DB4400A /* ObjectFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE75A3FBA2C2D87D14F06FE6 /* ObjectFinder.cpp */; };
 		D959CD5A7A60993E304D2A15 /* CalibrationHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B45662533BEB30C957B0091 /* CalibrationHandler.cpp */; };
 		DBCB84A37F9AECC254870D79 /* Wrappers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D347FB65D19015303863922A /* Wrappers.cpp */; };
+		DD8DFD2321247C8900B3A357 /* ofxCvCameraProjectorCalibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DD8DFD2221247C8900B3A357 /* ofxCvCameraProjectorCalibration.cpp */; };
 		DDAA6C44211CBA6100D0D2C7 /* librcdev.1.6.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FE2C1D2DEB243768E6FED7DF /* librcdev.1.6.0.dylib */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
-		EAC7194FEE1DD605AFF3D1AD /* ofxCvCameraProjectorCalibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3919A9C87D12E5ABCACDD09 /* ofxCvCameraProjectorCalibration.cpp */; };
 		EBCDE831EFAE08274E799C97 /* Calibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 402C8F4015542356D362AC88 /* Calibration.cpp */; };
 		F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */; };
 		F76B4A79BD8DE4854141CB47 /* fdog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2D8249D46647E3C51769CDE /* fdog.cpp */; };
@@ -81,7 +81,6 @@
 		2834D88A62CD23F3DE2C47D1 /* ofxButton.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxButton.h; path = ../../../addons/ofxGui/src/ofxButton.h; sourceTree = SOURCE_ROOT; };
 		325BD94FFB93161BBC68336E /* ofxCv.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCv.h; path = ../../../addons/ofxCv/src/ofxCv.h; sourceTree = SOURCE_ROOT; };
 		3479F59CF46E8638FC4FECE2 /* ofxIldaPoint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxIldaPoint.h; path = ../../../addons/ofxIlda/src/ofxIldaPoint.h; sourceTree = SOURCE_ROOT; };
-		378E08A49FCCE1538DA30E14 /* ofxCvCameraProjectorCalibration.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCvCameraProjectorCalibration.h; path = ../../../addons/ofxCvCameraProjectorCalibration/src/ofxCvCameraProjectorCalibration.h; sourceTree = SOURCE_ROOT; };
 		38B07F5B47E7C4ADA696600E /* ofxIldaPolyProcessor.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxIldaPolyProcessor.h; path = ../../../addons/ofxIlda/src/ofxIldaPolyProcessor.h; sourceTree = SOURCE_ROOT; };
 		402C8F4015542356D362AC88 /* Calibration.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = Calibration.cpp; path = ../../../addons/ofxCv/libs/ofxCv/src/Calibration.cpp; sourceTree = SOURCE_ROOT; };
 		44B351490B620D04E1E7C52D /* ofxInputField.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxInputField.cpp; path = ../../../addons/ofxGui/src/ofxInputField.cpp; sourceTree = SOURCE_ROOT; };
@@ -121,7 +120,6 @@
 		B87C60311EC1FE841C1ECD89 /* ofxLabel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxLabel.h; path = ../../../addons/ofxGui/src/ofxLabel.h; sourceTree = SOURCE_ROOT; };
 		B9076967F8C54A04362C04AA /* Helpers.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = Helpers.cpp; path = ../../../addons/ofxCv/libs/ofxCv/src/Helpers.cpp; sourceTree = SOURCE_ROOT; };
 		C0CA360E2A954D03DF99AFB3 /* ofxIldaRenderTarget.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxIldaRenderTarget.h; path = ../../../addons/ofxIlda/src/ofxIldaRenderTarget.h; sourceTree = SOURCE_ROOT; };
-		C3919A9C87D12E5ABCACDD09 /* ofxCvCameraProjectorCalibration.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxCvCameraProjectorCalibration.cpp; path = ../../../addons/ofxCvCameraProjectorCalibration/src/ofxCvCameraProjectorCalibration.cpp; sourceTree = SOURCE_ROOT; };
 		C70D8946940288799E82131E /* ofxSliderGroup.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxSliderGroup.h; path = ../../../addons/ofxGui/src/ofxSliderGroup.h; sourceTree = SOURCE_ROOT; };
 		C88333E71C9457E441C33474 /* ofxButton.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxButton.cpp; path = ../../../addons/ofxGui/src/ofxButton.cpp; sourceTree = SOURCE_ROOT; };
 		CC0A9D2733DF2668EF8035A5 /* ofxRayComposer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxRayComposer.cpp; path = ../../../addons/ofxRayComposer/src/ofxRayComposer.cpp; sourceTree = SOURCE_ROOT; };
@@ -130,6 +128,8 @@
 		D29DD28C195CD81267F3C8A1 /* Distance.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Distance.h; path = ../../../addons/ofxCv/libs/ofxCv/include/ofxCv/Distance.h; sourceTree = SOURCE_ROOT; };
 		D347FB65D19015303863922A /* Wrappers.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = Wrappers.cpp; path = ../../../addons/ofxCv/libs/ofxCv/src/Wrappers.cpp; sourceTree = SOURCE_ROOT; };
 		DB0CD4C938C079DCD67222FE /* imatrix.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = imatrix.h; path = ../../../addons/ofxCv/libs/CLD/include/CLD/imatrix.h; sourceTree = SOURCE_ROOT; };
+		DD8DFD2121247C8800B3A357 /* ofxCvCameraProjectorCalibration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxCvCameraProjectorCalibration.h; sourceTree = "<group>"; };
+		DD8DFD2221247C8900B3A357 /* ofxCvCameraProjectorCalibration.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxCvCameraProjectorCalibration.cpp; sourceTree = "<group>"; };
 		DDAA6C47211CC46B00D0D2C7 /* LaserHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LaserHandler.h; sourceTree = "<group>"; };
 		E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxPanel.cpp; path = ../../../addons/ofxGui/src/ofxPanel.cpp; sourceTree = SOURCE_ROOT; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -257,15 +257,6 @@
 			name = ofxIpCamStreamer;
 			sourceTree = "<group>";
 		};
-		7350EF7DA713D1E1092A03D9 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				C3919A9C87D12E5ABCACDD09 /* ofxCvCameraProjectorCalibration.cpp */,
-				378E08A49FCCE1538DA30E14 /* ofxCvCameraProjectorCalibration.h */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
 		7CC1E591490DB083FB916812 /* CLD */ = {
 			isa = PBXGroup;
 			children = (
@@ -349,7 +340,6 @@
 			isa = PBXGroup;
 			children = (
 				6025FAF6414C2CA589764D26 /* ofxCv */,
-				F985AC8B64A560FCA8072D20 /* ofxCvCameraProjectorCalibration */,
 				480A780D8D0308AE4A368801 /* ofxGui */,
 				8147F44D8E1384EFC607CC71 /* ofxIlda */,
 				711F9506178A0CE53E1C6B90 /* ofxIpCamStreamer */,
@@ -423,6 +413,8 @@
 				0B45662533BEB30C957B0091 /* CalibrationHandler.cpp */,
 				7425D314CDF1AD509F29268A /* CalibrationHandler.hpp */,
 				DDAA6C47211CC46B00D0D2C7 /* LaserHandler.h */,
+				DD8DFD2221247C8900B3A357 /* ofxCvCameraProjectorCalibration.cpp */,
+				DD8DFD2121247C8800B3A357 /* ofxCvCameraProjectorCalibration.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -443,14 +435,6 @@
 				EE2B2475774FC227811FCD08 /* rcdev_old.h */,
 			);
 			name = include;
-			sourceTree = "<group>";
-		};
-		F985AC8B64A560FCA8072D20 /* ofxCvCameraProjectorCalibration */ = {
-			isa = PBXGroup;
-			children = (
-				7350EF7DA713D1E1092A03D9 /* src */,
-			);
-			name = ofxCvCameraProjectorCalibration;
 			sourceTree = "<group>";
 		};
 		FA31CA6AFD5E8AF34150FF2F /* src */ = {
@@ -601,8 +585,8 @@
 				45CC483A999BF1065A6B926C /* Distance.cpp in Sources */,
 				B6840996567E78436F7ECFAB /* ETF.cpp in Sources */,
 				F76B4A79BD8DE4854141CB47 /* fdog.cpp in Sources */,
-				EAC7194FEE1DD605AFF3D1AD /* ofxCvCameraProjectorCalibration.cpp in Sources */,
 				856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */,
+				DD8DFD2321247C8900B3A357 /* ofxCvCameraProjectorCalibration.cpp in Sources */,
 				853E0BA2F448076739446874 /* ofxColorPicker.cpp in Sources */,
 				B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */,
 				1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */,
