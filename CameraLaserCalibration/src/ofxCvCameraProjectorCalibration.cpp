@@ -19,8 +19,8 @@ namespace ofxCv {
     
     void CameraCalibration::setupCandidateObjectPoints(){
         candidateObjectPts.clear();
-        for(int i = 0; i < patternSize.height; i++) {
-            for(int j = 0; j < patternSize.width; j++) {
+        for(int i = 0; i < patternSize.height-1; i++) {
+            for(int j = 0; j < patternSize.width-1; j++) {
                 candidateObjectPts.push_back(cv::Point3f(float(j * squareSize), float(i * squareSize), 0));
             }
         }
@@ -125,12 +125,14 @@ namespace ofxCv {
     
     void CameraProjectorCalibration::setup(int projectorWidth, int projectorHeight){
         
-        calibrationCamera.setPatternSize(8, 5);
-        calibrationCamera.setSquareSize(50);
-        calibrationCamera.setPatternType(CHESSBOARD);
+        calibrationCamera.setPatternSize(5, 7);
+        calibrationCamera.setSquareSize(39);
+        calibrationCamera.setMarkerSize(17.5);
+//        calibrationCamera.setPatternType(CHARUCO);
+        calibrationCamera.setupBoards();
         
         calibrationProjector.setImagerSize(projectorWidth, projectorHeight);
-        calibrationProjector.setPatternSize(3, 5);
+        calibrationProjector.setPatternSize(3, 7);
         calibrationProjector.setPatternPosition(projectorWidth/3, projectorHeight/5);
         calibrationProjector.setSquareSize(projectorWidth/32);
         calibrationProjector.setPatternType(ASYMMETRIC_CIRCLES_GRID);
@@ -168,12 +170,49 @@ namespace ofxCv {
         return out;
     }
     
+    bool CameraProjectorCalibration::addProjectedCharuco(cv::Mat img, cv::Mat processedImg){
+        
+        vector<cv::Point2f> chessImgPts;
+        cv::Mat boardRot;
+        cv::Mat boardTrans;
+        
+        bool bPrintedPatternFound = calibrationCamera.findBoard(img, chessImgPts, true, boardRot, boardTrans);
+        cout << "PrintedPatternFound " << bPrintedPatternFound << endl;
+        if(bPrintedPatternFound) {
+            
+            vector<cv::Point2f> circlesImgPts;
+            bool bProjectedPatternFound = cv::findCirclesGrid(processedImg, calibrationProjector.getPatternSize(), circlesImgPts, cv::CALIB_CB_ASYMMETRIC_GRID);
+            cout << "ProjectedPatternFound " << bProjectedPatternFound << endl;
+
+            if(bProjectedPatternFound){
+//                rot [-1.944547292820416; -1.964836893795539; 0.5379249003308255] trans [-0.2052697613082028; 0.135725810521779; 4.370682515179086]
+//                rot [-1.944547249510926; -1.964836845471138; 0.5379249745432813] trans [-0.1718037661237475; 0.1747136472309362;4.35063311560679]
+                vector<cv::Point3f> circlesObjectPts;
+                cout<<"rot " << boardRot << " trans " << boardTrans<<endl;
+                calibrationCamera.computeCandidateBoardPose(chessImgPts, boardRot, boardTrans);
+                cout<<"rot " << boardRot << " trans " << boardTrans<<endl;
+                calibrationCamera.backProject(boardRot, boardTrans, circlesImgPts, circlesObjectPts);
+                
+                calibrationCamera.imagePoints.push_back(chessImgPts);
+                calibrationCamera.getObjectPoints().push_back(calibrationCamera.getCandidateObjectPoints());
+                calibrationCamera.getBoardRotations().push_back(boardRot);
+                calibrationCamera.getBoardTranslations().push_back(boardTrans);
+                
+                calibrationProjector.imagePoints.push_back(calibrationProjector.getCandidateImagePoints());
+                calibrationProjector.getObjectPoints().push_back(circlesObjectPts);
+                
+                return true;
+            }
+        }
+        return false;
+    }
+    
     bool CameraProjectorCalibration::addProjected(cv::Mat img, cv::Mat processedImg){
         
         vector<cv::Point2f> chessImgPts;
         
-        bool bPrintedPatternFound = calibrationCamera.findBoard(img, chessImgPts, true);
-        
+        bool bPrintedPatternFound = false ;//calibrationCamera.findBoard(img, chessImgPts, true);
+        cout << "printedPatternFound " << bPrintedPatternFound << endl;
         if(bPrintedPatternFound) {
             
             vector<cv::Point2f> circlesImgPts;
@@ -204,68 +243,20 @@ namespace ofxCv {
     bool CameraProjectorCalibration::setDynamicProjectorImagePoints(cv::Mat img){
         
         vector<cv::Point2f> chessImgPts;
-        bool bPrintedPatternFound = calibrationCamera.findBoard(img, chessImgPts, true);
-        if(bPrintedPatternFound) {
-            
-            cv::Mat boardRot;
-            cv::Mat boardTrans;
-            calibrationCamera.computeCandidateBoardPose(chessImgPts, boardRot, boardTrans);
-            
-            const auto & camCandObjPts = calibrationCamera.getCandidateObjectPoints();
-            Point3f axisX = camCandObjPts[1] - camCandObjPts[0];
-            Point3f axisY = camCandObjPts[calibrationCamera.getPatternSize().width] - camCandObjPts[0];
-            Point3f pos   = camCandObjPts[0] - axisY * (calibrationCamera.getPatternSize().width-2);
-            
-            vector<Point3f> auxObjectPoints;
-            for(int i = 0; i < calibrationProjector.getPatternSize().height; i++) {
-                for(int j = 0; j < calibrationProjector.getPatternSize().width; j++) {
-                    auxObjectPoints.push_back(pos + axisX * float((2 * j) + (i % 2)) + axisY * i);
-                }
-            }
-            
-            Mat Rc1, Tc1, Rc1inv, Tc1inv, Rc2, Tc2, Rp1, Tp1, Rp2, Tp2;
-            Rp1 = calibrationProjector.getBoardRotations().back();
-            Tp1 = calibrationProjector.getBoardTranslations().back();
-            Rc1 = calibrationCamera.getBoardRotations().back();
-            Tc1 = calibrationCamera.getBoardTranslations().back();
-            Rc2 = boardRot;
-            Tc2 = boardTrans;
-            
-            Mat auxRinv = Mat::eye(3,3,CV_32F);
-            Rodrigues(Rc1,auxRinv);
-            auxRinv = auxRinv.inv();
-            Rodrigues(auxRinv, Rc1inv);
-            Tc1inv = -auxRinv*Tc1;
-            Mat Raux, Taux;
-            composeRT(Rc2, Tc2, Rc1inv, Tc1inv, Raux, Taux);
-            composeRT(Raux, Taux, Rp1, Tp1, Rp2, Tp2);
-            
-            vector<Point2f> followingPatternImagePoints;
-            projectPoints(Mat(auxObjectPoints),
-                          Rp2, Tp2,
-                          calibrationProjector.getDistortedIntrinsics().getCameraMatrix(),
-                          calibrationProjector.getDistCoeffs(),
-                          followingPatternImagePoints);
-            
-            calibrationProjector.setCandidateImagePoints(followingPatternImagePoints);
-        }
-        return bPrintedPatternFound;
-    }
-    
-    bool CameraProjectorCalibration::setDynamicProjectorImagePointsNew(cv::Mat img){
+        cv::Mat boardRot;
+        cv::Mat boardTrans;
         
-        vector<cv::Point2f> chessImgPts;
-        bool bPrintedPatternFound = calibrationCamera.findBoard(img, chessImgPts, true);
+        bool bPrintedPatternFound = calibrationCamera.findBoard(img, chessImgPts, true, boardRot, boardTrans);
         if(bPrintedPatternFound) {
             
-            cv::Mat boardRot;
-            cv::Mat boardTrans;
+//            cout<<"rot " << boardRot << " trans " << boardTrans<<endl;
             calibrationCamera.computeCandidateBoardPose(chessImgPts, boardRot, boardTrans);
-            
+//            cout<<"rot " << boardRot << " trans " << boardTrans<<endl;
+
             const auto & camCandObjPts = calibrationCamera.getCandidateObjectPoints();
             Point3f axisX = camCandObjPts[1] - camCandObjPts[0];
             Point3f axisY = camCandObjPts[calibrationCamera.getPatternSize().width] - camCandObjPts[0];
-            Point3f pos   = camCandObjPts[0] - axisY * (calibrationCamera.getPatternSize().width-2);
+            Point3f pos   = camCandObjPts[0] - axisY * (calibrationCamera.getPatternSize().width-calibrationCamera.getPatternSize().width/2);
             
             vector<Point3f> auxObjectPoints;
             for(int i = 0; i < calibrationProjector.getPatternSize().height; i++) {
@@ -330,6 +321,7 @@ namespace ofxCv {
         cv::Mat fundamentalMatrix, essentialMatrix;
         cv::Mat rotation3x3;
         
+        if(auxImagePointsCamera.size() == 0) return;
         cv::stereoCalibrate(objectPoints,
                             auxImagePointsCamera,
                             calibrationProjector.imagePoints,

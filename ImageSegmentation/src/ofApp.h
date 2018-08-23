@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxGui.h"
-#include "ofxImageSegmentation.h"
+//#include "ofxImageSegmentation.h"
 #include "ofxCv.h"
 #include <iostream>
 #include "MeanShift.h"
@@ -20,13 +20,13 @@ class ofApp : public ofBaseApp{
 	void keyReleased(int key);
 	
 	ofVideoGrabber videoInput;
-	ofxImageSegmentation segmentation;
+    ofxImageSegmentation segmentation;
 	ofImage segmentedImage;
 
-	ofxPanel gui;
-	ofxSlider<float> sigma;
-	ofxSlider<float> k;
-	ofxSlider<int> min_size;
+//    ofxPanel gui;
+//    ofxSlider<float> sigma;
+//    ofxSlider<float> k;
+//    ofxSlider<int> min_size;
     
     ofImage input;
     

@@ -13,13 +13,14 @@
 
 #include "ofMain.h"
 #include "ofxCv.h"
+#include <opencv2/aruco/charuco.hpp>
+#include "ofxCharucoCalibration.h"
 
 using namespace cv;
 
 namespace ofxCv {
     
     class CalibrationPatched : public Calibration {
-        
     public:
         void resetBoards() {
             objectPoints.clear();
@@ -36,15 +37,44 @@ namespace ofxCv {
         cv::Size getPatternSize() { return patternSize; }
         vector<cv::Mat> & getBoardRotations() { return boardRotations; }
         vector<cv::Mat> & getBoardTranslations() { return boardTranslations; }
-        vector<vector<cv::Point3f> > & getObjectPoints() { return objectPoints; }
+        vector<vector<cv::Point3f> > & getObjectPoints() {
+//            updateObjectPoints();
+
+            return objectPoints; }
+        
+    
     };
     
+    class CalibrationPatchedCharuco : public ofxCharucoCalibration {
+    public:
+        void resetBoards() {
+            objectPoints.clear();
+            imagePoints.clear();
+            boardRotations.clear();
+            boardTranslations.clear();
+        }
+        void remove(int index){
+            objectPoints.erase(objectPoints.begin() + index);
+            imagePoints.erase(imagePoints.begin() + index);
+            boardRotations.erase(boardRotations.begin() + index);
+            boardTranslations.erase(boardTranslations.begin() + index);
+        }
+        cv::Size getPatternSize() { return patternSize; }
+        vector<cv::Mat> & getBoardRotations() { return boardRotations; }
+        vector<cv::Mat> & getBoardTranslations() { return boardTranslations; }
+        vector<vector<cv::Point3f> > & getObjectPoints() {
+//            updateObjectPoints();
+
+            return objectPoints; }
+        
+        
+    };
 #pragma mark - CameraCalibration
     
-    class CameraCalibration : public CalibrationPatched {
+    class CameraCalibration : public CalibrationPatchedCharuco {
         
     public:
-        void computeCandidateBoardPose(const vector<cv::Point2f> & imgPts, cv::Mat& boardRot, cv::Mat& boardTrans);
+        void computeCandidateBoardPose(const vector<cv::Point2f> & imgPts, cv::Mat & boardRot, cv::Mat & boardTrans);
         bool backProject(const cv::Mat& boardRot64, const cv::Mat& boardTrans64,
                          const vector<cv::Point2f>& imgPt,
                          vector<cv::Point3f>& worldPt);
@@ -90,12 +120,13 @@ namespace ofxCv {
         void loadExtrinsics(string filename, bool absolute = false);
         
         bool addProjected(cv::Mat img, cv::Mat processedImg);
-        
+        bool addProjectedCharuco(cv::Mat img, cv::Mat processedImg);
+
         bool setDynamicProjectorImagePoints(cv::Mat img);
-        bool setDynamicProjectorImagePointsNew(cv::Mat img);
         void stereoCalibrate();
         void resetBoards();
         int cleanStereo(float maxReproj);
+        
         
         vector<Point2f> getProjected(const vector<Point3f> & ptsInWorld,
                                      const cv::Mat & rotObjToCam = Mat::zeros(3, 1, CV_64F),

@@ -1,7 +1,8 @@
+ofxCharucoCalibration
 ofxCv
 ofxCvCameraProjectorCalibration
 ofxGui
 ofxIlda
 ofxIpCamStreamer
-ofxOpenCvHomebrew
+ofxOpencvHomebrew
 ofxRayComposer

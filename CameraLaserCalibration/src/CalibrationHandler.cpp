@@ -14,36 +14,33 @@ using namespace cv;
 #pragma mark Setup
 
 void CalibrationHandler::setup(){
-   
+    
+    fbo3DSpace.allocate(1024,1024);
+
     laserHandler.setup();
-    
 
-    cam.allocate(1280,720,OF_IMAGE_COLOR);
-    
-    camMat = toCv(cam);
+
     camMat = ipCam.get();
-    cam.update();
-    
+    camMat.copyTo(undistorted);
+    camMat.copyTo(previous);
+    camMat.copyTo(diff);
 
-    // init camera
-    //    cam.setup(1980, 1024);
+
+
+//    // init camera
+//    ofImage cam;
+//    cam.allocate(1980, 1024, OF_IMAGE_COLOR);
+//
+//    imitate(undistorted, cam);
+//
+//    // duplicate image properties into ofPixels
+//
+//    imitate(previous, cam);
+//    imitate(diff, cam);
     
-    imitate(undistorted, cam);
-    
-    // duplicate image properties into ofPixels
-    
-    imitate(previous, cam);
-    imitate(diff, cam);
-    
-    
-    // draw UI on the left
-    screenRect.set(0,0,2560,1440);
-    // use second screen for projection
-    projectorRect.set(0,0,4096,4096);
-    projectorFbo.allocate(projectorRect.width, projectorRect.height);
     
     // setup calibrator
-    camProjCalib.setup(projectorRect.width, projectorRect.height);
+    camProjCalib.setup(LASER_RESOLUTION, LASER_RESOLUTION);
 //    setState(CAMERA);
     setState(PROJECTOR_STATIC);
 //    setState(PROJECTOR_DYNAMIC);
@@ -69,17 +66,24 @@ void CalibrationHandler::setupDefaultParams(){
     appParams.add( timeMinBetweenCaptures.set("Time min between captures", 2.0, 0, 10) );
     
     boardsParams.setName("Boards Params");
-    boardsParams.add( numBoardsFinalCamera.set("Num boards Camera", 20, 10, 30) );
-    boardsParams.add( numBoardsFinalProjector.set("Num boards Projector", 12, 6, 15) );
-    boardsParams.add( numBoardsBeforeCleaning.set("Num boards before cleaning", 8, 5, 10) );
-    boardsParams.add( numBoardsBeforeDynamicProjection.set("Num boards before dynamic proj", 5, 3, 10) );
-    boardsParams.add( maxReprojErrorCamera.set("Max reproj error Camera", 0.2, 0.1, 2.5) );
-    boardsParams.add( maxReprojErrorProjector.set("Max reproj error Projector", 0.6, 0.1, 1.0) );
+    boardsParams.add( numBoardsFinalCamera.set("Num boards Camera", 20, 10, 50) );
+    boardsParams.add( numBoardsFinalProjector.set("Num boards Projector", 20, 10, 50) );
+    boardsParams.add( numBoardsBeforeCleaning.set("Num boards before cleaning", 8, 5, 30) );
+    boardsParams.add( numBoardsBeforeDynamicProjection.set("Num boards before dynamic proj", 5, 5, 50) );
+    boardsParams.add( maxReprojErrorCamera.set("Max reproj error Camera", 0.2, 0.1, 5) );
+    boardsParams.add( maxReprojErrorProjector.set("Max reproj error Projector", 0.2, 0.1, 5) );
     
     imageProcessingParams.setName("Processing Params");
     imageProcessingParams.add( alternativeProcessing.set("alternative Processing", false) );
     imageProcessingParams.add( circleDetectionThreshold.set("Circle image threshold", 220, 150, 255) );
-    
+    imageProcessingParams.add( iLowH.set("low H", 170, 0, 255) );
+    imageProcessingParams.add( iHighH.set("high H", 255, 0, 255) );
+    imageProcessingParams.add( iLowS.set("low S", 170, 0, 255) );
+    imageProcessingParams.add( iHighS.set("high S", 255, 0, 255) );
+    imageProcessingParams.add( iLowV.set("low V", 170, 0, 255) );
+    imageProcessingParams.add( iHighV.set("high V", 255, 0, 255) );
+    imageProcessingParams.add( denoise.set("denoise", 4, 1, 20) );
+
     parameters.add( currStateString.set("Current State", getCurrentStateString()) );
     
     parameters.add(appParams);
@@ -99,6 +103,7 @@ void CalibrationHandler::setState(CalibState state){
             camProjCalib.resetBoards();
             break;
         case PROJECTOR_STATIC:
+
             calibrationCamera.load("calibrationCamera.yml");
             camProjCalib.resetBoards();
             calibrationCamera.setupCandidateObjectPoints();
@@ -152,11 +157,7 @@ string CalibrationHandler::getCurrentStateString(){
 void CalibrationHandler::update(){
     
     camMat = ipCam.get();
-    cam.update();
-    laserHandler.update();
-//    if(cam.isFrameNew())
     {
-//        Mat camMat = toCv(cam);
         
         switch (currState) {
                 
@@ -169,14 +170,18 @@ void CalibrationHandler::update(){
                 break;
                 
             case PROJECTOR_STATIC:
+                laserHandler.update();
+
                 if( !updateCamDiff(camMat) ) return;
                 
-                if( calibrateProjector(camMat) ){
+                if( calibrateProjectorCharuco(camMat) ){
                     lastTime = ofGetElapsedTimef();
                 }
                 break;
                 
             case PROJECTOR_DYNAMIC:
+                laserHandler.update();
+
                 if(bProjectorRefreshLock){
                     if( camProjCalib.setDynamicProjectorImagePoints(camMat) ){
                         createLaserPattern();
@@ -187,7 +192,7 @@ void CalibrationHandler::update(){
                     }
                 }
                 else {
-                    if( calibrateProjector(camMat) ) {
+                    if( calibrateProjectorCharuco(camMat) ) {
                         lastTime = ofGetElapsedTimef();
                     }
                     bProjectorRefreshLock = true;
@@ -207,11 +212,11 @@ void CalibrationHandler::update(){
 
 bool CalibrationHandler::updateCamDiff(cv::Mat camMat) {
     
-    Mat prevMat = toCv(previous);
-    Mat diffMat = toCv(diff);
-    absdiff(prevMat, camMat, diffMat);
-    camMat.copyTo(prevMat);
-    diffMean = mean(Mat(mean(diffMat)))[0];
+//    Mat prevMat = toCv(previous);
+//    Mat diffMat = toCv(diff);
+    absdiff(previous, camMat, diff);
+    camMat.copyTo(previous);
+    diffMean = mean(Mat(mean(diff)))[0];
 
     
     float timeDiff = ofGetElapsedTimef() - lastTime;
@@ -221,31 +226,57 @@ bool CalibrationHandler::updateCamDiff(cv::Mat camMat) {
 
 void CalibrationHandler::processImageForCircleDetection(cv::Mat img){
     
+//    cv::Mat hsv_image, img;
+//    cv::cvtColor(imgOrig, hsv_image, cv::COLOR_RGB2HSV);
+//
+//    cv::inRange(hsv_image, cv::Scalar(0, 255,255), cv::Scalar(255, 255, 255), hsv_image);
+//    cv::cvtColor(hsv_image, img, cv::COLOR_HSV2RGB);
+
+    
     if(alternativeProcessing){
-        // In this case, we will "blend" camMat and prevMat before adding the image to process, or better,
-        // we will process both first for grid circles (i.e., threhold, erode and dilate), and then OR them:
-        Mat im1, im2;
+        Mat imgHSV;
         
-        if(img.type() != CV_8UC1) {
-            cvtColor(img, im1, CV_RGB2GRAY);
-        }
-        threshold(im1, im1, 210, 255, THRESH_BINARY_INV);
-        erode(im1, im1, Mat());
-        dilate(im1, im1, Mat());
-        dilate(im1, im1, Mat());
-        erode(im1, im1, Mat());
+        cvtColor(img, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
         
-        if(toCv(previous).type() != CV_8UC1) {
-            cvtColor(toCv(previous), im2, CV_RGB2GRAY);
-        }
-        threshold(im2, im2, 210, 255, THRESH_BINARY_INV);
-        erode(im2, im2, Mat());
-        dilate(im2, im2, Mat());
-        dilate(im2, im2, Mat());
-        erode(im2, im2, Mat());
+        Mat imgThresholded;
         
-        //OR them:
-        bitwise_and(im1,im2,processedImg);
+        inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), processedImg); //Threshold the image
+        
+        //morphological opening (removes small objects from the foreground)
+        erode(processedImg, processedImg, getStructuringElement(MORPH_ELLIPSE, cv::Size(denoise, denoise)) );
+        dilate( processedImg, processedImg, getStructuringElement(MORPH_ELLIPSE, cv::Size(denoise, denoise)) );
+
+        //morphological closing (removes small holes from the foreground)
+        dilate( processedImg, processedImg, getStructuringElement(MORPH_ELLIPSE, cv::Size(denoise, denoise)) );
+        erode(processedImg, processedImg, getStructuringElement(MORPH_ELLIPSE, cv::Size(denoise, denoise)) );
+
+        bitwise_not ( processedImg, processedImg );
+        
+        
+//        // In this case, we will "blend" camMat and prevMat before adding the image to process, or better,
+//        // we will process both first for grid circles (i.e., threhold, erode and dilate), and then OR them:
+//        Mat im1, im2;
+//
+//        if(img.type() != CV_8UC1) {
+//            cvtColor(img, im1, CV_RGB2GRAY);
+//        }
+//        threshold(im1, im1, circleDetectionThreshold, 255, THRESH_BINARY_INV);
+//        erode(im1, im1, Mat());
+//        dilate(im1, im1, Mat());
+//        dilate(im1, im1, Mat());
+//        erode(im1, im1, Mat());
+//
+//        if(toCv(previous).type() != CV_8UC1) {
+//            cvtColor(toCv(previous), im2, CV_RGB2GRAY);
+//        }
+//        threshold(im2, im2, circleDetectionThreshold, 255, THRESH_BINARY_INV);
+//        erode(im2, im2, Mat());
+//        dilate(im2, im2, Mat());
+//        dilate(im2, im2, Mat());
+//        erode(im2, im2, Mat());
+//
+//        //OR them:
+//        bitwise_and(im1,im2,processedImg);
         
     }else{
         if(img.type() != CV_8UC1) {
@@ -254,6 +285,13 @@ void CalibrationHandler::processImageForCircleDetection(cv::Mat img){
             processedImg = img;
         }
         cv::threshold(processedImg, processedImg, circleDetectionThreshold, 255, cv::THRESH_BINARY_INV);
+        //morphological opening (removes small objects from the foreground)
+        erode(processedImg, processedImg, getStructuringElement(MORPH_ELLIPSE, cv::Size(denoise, denoise)) );
+        dilate( processedImg, processedImg, getStructuringElement(MORPH_ELLIPSE, cv::Size(denoise, denoise)) );
+        
+        //morphological closing (removes small holes from the foreground)
+        dilate( processedImg, processedImg, getStructuringElement(MORPH_ELLIPSE, cv::Size(denoise, denoise)) );
+        erode(processedImg, processedImg, getStructuringElement(MORPH_ELLIPSE, cv::Size(denoise, denoise)) );
     }
 }
 
@@ -263,8 +301,15 @@ bool CalibrationHandler::calibrateCamera(cv::Mat img){
     
     bool bFound = calibrationCamera.add(img);
     if(bFound){
+        // saveImage
+        ofImage ofImg;
+        toOf(img, ofImg);
+        ofImg.save("camCalib/capture_"+ofToString(img_num)+".jpg", OF_IMAGE_QUALITY_BEST);
+        img_num++;
+        imwrite("img_#.jpg", img);
         
         log() << "Found board!" << endl;
+        
         
         calibrationCamera.calibrate();
         
@@ -295,6 +340,76 @@ bool CalibrationHandler::calibrateCamera(cv::Mat img){
     return bFound;
 }
 
+bool CalibrationHandler::calibrateProjectorCharuco(cv::Mat img){
+    
+    CameraCalibration & calibrationCamera = camProjCalib.getCalibrationCamera();
+    ProjectorCalibration & calibrationProjector = camProjCalib.getCalibrationProjector();
+    
+    processImageForCircleDetection(img);
+    
+    if(camProjCalib.addProjectedCharuco(img, processedImg)){
+        
+        // saveImage
+        ofImage ofImg;
+        toOf(img, ofImg);
+        ofImg.save("projectorCalib/capture_"+ofToString(img_num)+".jpg", OF_IMAGE_QUALITY_BEST);
+        img_num++;
+        imwrite("img_#.jpg", img);
+        
+        log() << "Calibrating projector" << endl;
+        
+        calibrationProjector.calibrate();
+        
+        if(calibrationProjector.size() >= numBoardsBeforeCleaning) {
+            
+            log() << "Cleaning" << endl;
+            
+            int numBoardRemoved = camProjCalib.cleanStereo(maxReprojErrorProjector);
+            
+            log() << numBoardRemoved << " boards removed";
+            
+            if(currState == PROJECTOR_DYNAMIC && calibrationProjector.size() < numBoardsBeforeDynamicProjection) {
+                log() << "Too many boards removed, restarting to PROJECTOR_STATIC" << endl;
+                setState(PROJECTOR_STATIC);
+                return false;
+            }
+        }
+        
+        log() << "Performing stereo-calibration" << endl;
+        
+        camProjCalib.stereoCalibrate();
+        
+        log() << "Done" << endl;
+        
+        if(currState == PROJECTOR_STATIC) {
+            
+            if( calibrationProjector.size() < numBoardsBeforeDynamicProjection) {
+                log() << numBoardsBeforeDynamicProjection - calibrationProjector.size() << " boards to go before dynamic projection" << endl;
+            } else {
+                setState(PROJECTOR_DYNAMIC);
+            }
+            
+        } else {
+            
+            if( calibrationProjector.size() < numBoardsFinalProjector) {
+                log() << numBoardsFinalProjector - calibrationProjector.size() << " boards to go to completion" << endl;
+            } else {
+                calibrationProjector.save("calibrationProjector.yml");
+                log() << "Projector calibration finished & saved to calibrationProjector.yml" << endl;
+                
+                camProjCalib.saveExtrinsics("CameraProjectorExtrinsics.yml");
+                log() << "Stereo Calibration finished & saved to CameraProjectorExtrinsics.yml" << endl;
+                
+                log() << "Congrats, you made it ;)" << endl;
+                
+                setState(RUN);
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
 bool CalibrationHandler::calibrateProjector(cv::Mat img){
     
     CameraCalibration & calibrationCamera = camProjCalib.getCalibrationCamera();
@@ -303,6 +418,13 @@ bool CalibrationHandler::calibrateProjector(cv::Mat img){
     processImageForCircleDetection(img);
     
     if(camProjCalib.addProjected(img, processedImg)){
+        
+        // saveImage
+        ofImage ofImg;
+        toOf(img, ofImg);
+        ofImg.save("projectorCalib/capture_"+ofToString(img_num)+".jpg", OF_IMAGE_QUALITY_BEST);
+        img_num++;
+        imwrite("img_#.jpg", img);
         
         log() << "Calibrating projector" << endl;
         
@@ -382,11 +504,11 @@ void CalibrationHandler::draw(){
         case CAMERA:
             drawReprojLog(camProjCalib.getCalibrationCamera(), 100);
             if(camProjCalib.getCalibrationCamera().size() > 0) {
-                camProjCalib.getCalibrationCamera().undistort(camMat, toCv(undistorted));
-                undistorted.update();
-                undistorted.draw(0, cam.getHeight()-undistorted.getHeight()/4, undistorted.getWidth()/4, undistorted.getHeight()/4);
+                camProjCalib.getCalibrationCamera().undistort(camMat, undistorted);
+                ofxCv::drawMat(undistorted,0, 720, 1280/4, 720/4);
                 ofSetColor(255, 80);
-                undistorted.draw(0, 0);
+                ofxCv::drawMat(undistorted,0, 0);
+                ofSetColor(255);
 
             }
             break;
@@ -394,16 +516,23 @@ void CalibrationHandler::draw(){
         case PROJECTOR_DYNAMIC:
             drawReprojErrors("Projector", camProjCalib.getCalibrationProjector(), 100);
             drawReprojLog(camProjCalib.getCalibrationProjector(), 120);
+
+            
+            camProjCalib.getCalibrationCamera().undistort(camMat, undistorted);
+            ofxCv::drawMat(undistorted,0, 720, 1280/4, 720/4);
+            ofSetColor(255, 80);
+            ofxCv::drawMat(undistorted,0, 0);
+            ofSetColor(255);
+            
+            ofxCv::drawMat(camProjCalib.getCalibrationCamera().markersDetectedMat,1280/2, 720, 1280/4, 720/4);
+
+
             if(ofxCv::getAllocated(processedImg)){
-                toOf(processedImg, ofImg);
-                ofImg.update();
-                ofImg.draw(undistorted.getWidth()/4, cam.getHeight(), ofImg.getWidth()/4, ofImg.getHeight()/4);
-//                ofxCv::drawMat(processedImg, 640, 0, 320, 240);
+                ofxCv::drawMat(processedImg,1280/4, 720, 1280/4, 720/4);
             }
-            undistorted.draw(0, cam.getHeight(), undistorted.getWidth()/4, undistorted.getHeight()/4);
 
 
-            laserHandler.draw(1049,480,409,409);
+            laserHandler.draw(1280*3/4,720,320,320);
 
             break;
             
@@ -423,7 +552,7 @@ void CalibrationHandler::draw(){
             
             // project the inputPts over the object
             ofPushMatrix();
-            ofTranslate(cam.getWidth()/2, cam.getHeight()/2);
+            ofTranslate(1280/2, 720/2);
             ofSetColor(ofColor::red);
             for (int i=0; i<outPts.size(); i++){
                 int next = (i+1) % outPts.size();
@@ -431,7 +560,7 @@ void CalibrationHandler::draw(){
             }
             ofPopMatrix();
             
-            laserHandler.draw(1049,480,409,409);
+            laserHandler.draw(1280/2,720,320,320);
 
         }
             break;
@@ -441,10 +570,9 @@ void CalibrationHandler::draw(){
     }
     
 
-    
 
     
-    ofDrawBitmapString(getLog(10), 10, cam.getHeight()+20);
+    ofDrawBitmapString(getLog(10), 10, 720+720/4+20);
 //    projectorFbo.draw(640,480,409,409);
 //    ofNoFill();
 //    ofSetColor(150);
@@ -456,6 +584,7 @@ void CalibrationHandler::draw(){
 //    ofPopMatrix();
 
 }
+
 
 void CalibrationHandler::drawFoundImagePoints(const ofxCv::Calibration & calib){
     const auto & imagePoints = calib.imagePoints;
@@ -526,7 +655,10 @@ void CalibrationHandler::createLaserPattern(){
     vector<ofPolyline> laserPolys;
     for(const auto & p : camProjCalib.getCalibrationProjector().getCandidateImagePoints()) {
         ofPolyline laserPoly;
-        laserPoly.addVertex(glm::vec3(p.x/4096.0f, p.y/4096.0f,0));
+        glm::vec3 pos = glm::vec3(p.x/LASER_RESOLUTION, p.y/LASER_RESOLUTION,0);
+        if(pos.x < 0 || pos.x > 1) continue;
+        if(pos.y < 0 || pos.y > 1) continue;
+        laserPoly.addVertex(pos);
         laserPolys.push_back(laserPoly);
     }
     laserHandler.set(laserPolys);

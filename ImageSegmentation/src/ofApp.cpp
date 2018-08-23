@@ -9,10 +9,10 @@ void ofApp::setup(){
 	ofSetCircleResolution(80);
 	ofBackground(54, 54, 54);
 
-	gui.setup("SEGMENTATION PARAMETERS");
-	gui.add(sigma.setup("SIGMA", segmentation.sigma, 0, 2.0));
-	gui.add(k.setup("K", segmentation.k, 0, 500));
-	gui.add(min_size.setup("MIN SIZE", segmentation.min, 0, 50));
+//    gui.setup("SEGMENTATION PARAMETERS");
+//    gui.add(sigma.setup("SIGMA", segmentation.sigma, 0, 2.0));
+//    gui.add(k.setup("K", segmentation.k, 0, 500));
+//    gui.add(min_size.setup("MIN SIZE", segmentation.min, 0, 50));
 	
 //    videoInput.initGrabber(640,480);
     

@@ -11,8 +11,11 @@
 #include "ofxGui.h"
 #include "ofxCv.h"
 #include "ofxCvCameraProjectorCalibration.h"
+#include "ofxCharucoCalibration.h"
 #include "ofxIpCamStreamer.h"
 #include "LaserHandler.h"
+
+#define LASER_RESOLUTION 4096
 
 enum CalibState {
     CAMERA,
@@ -32,7 +35,6 @@ public:
     //    ofVideoGrabber cam;
     ofxIpCamStreamer ipCam;
     Mat camMat;
-    ofImage cam;
     
     LaserHandler laserHandler;
     
@@ -41,7 +43,8 @@ public:
     
     bool calibrateCamera(cv::Mat img);
     bool calibrateProjector(cv::Mat img);
-    
+    bool calibrateProjectorCharuco(cv::Mat img);
+
 private:
     
     CalibState currState;
@@ -53,9 +56,9 @@ private:
     ofImage ofImg;
     
     // board holding movement
-    ofImage undistorted;
-    ofPixels previous;
-    ofPixels diff;
+    Mat undistorted;
+    Mat previous;
+    Mat diff;
     float diffMean;
     float lastTime;
     bool updateCamDiff(cv::Mat camMat);
@@ -63,11 +66,7 @@ private:
     // lock to give enough time for the projection to be seen by the camera
     
     bool bProjectorRefreshLock;
-    
-    // screen & projector configuration
-    
-    ofRectangle projectorRect;
-    ofRectangle screenRect;
+
     
     // draw
     void drawIntrinsics(string name, const ofxCv::Calibration & calib, int y);
@@ -108,12 +107,23 @@ public:
     ofParameterGroup imageProcessingParams;
     ofParameter<bool> alternativeProcessing;
     ofParameter<int> circleDetectionThreshold;
+    ofParameter<int> iLowH;
+    ofParameter<int> iHighH;
+    ofParameter<int> iLowS;
+    ofParameter<int> iHighS;
+    ofParameter<int> iLowV;
+    ofParameter<int> iHighV;
+    ofParameter<int> denoise;
 
     ofFbo projectorFbo;
     
     cv::Mat rotObjToCam, transObjToCam;
     cv::Mat rotObjToProj, transObjToProj;
     
+    int img_num = 0;
+    
+    ofFbo fbo3DSpace;
+    ofCamera cam3D;
 };
 /*
  From Alvaro:
