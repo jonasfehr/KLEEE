@@ -1,0 +1,23 @@
+{
+    "group": {
+        "Walker": {
+            "Length": "1000",
+            "Modulator": {
+                "doFollowDirection": "0",
+                "xAmplitude": "0",
+                "xSpeed": "0.0628905",
+                "yAmplitude": "0",
+                "ySpeed": "0.0680966"
+            },
+            "MovementPattern": "0",
+            "Scaler": "0.331633",
+            "Speed": "0.01",
+            "doModulate": "1",
+            "lineColor": "0, 1, 1, 1",
+            "maxForce": "0.00143136",
+            "maxRepulsion": "0.00530891",
+            "maxRepulsionSpeed": "0.00663544",
+            "minDistancePred": "0"
+        }
+    }
+}

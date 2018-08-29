@@ -50,13 +50,13 @@ public:
     void activate(){ bActive = true;}
     void setPos(glm::vec3 pos ){ this->pos = pos;}
     glm::vec3 getPos(){ return pos;}
-
+    
 private:
     bool bActive;
     glm::vec3 pos;
     float mass;
     float G;
-
+    
 };
 
 class RandomWithoutRepeate{
@@ -84,6 +84,7 @@ private:
 class Walker{
 public:
     ofParameter<int> movementPattern{"MovementPattern", STEERING, 0, SINUS};
+    ofParameter<float> scaler{"Scaler", 1.0f, 0.0f, 1.0f};
     ofParameter<float> speed{"Speed", 0.001f, 0.0f, 0.01f};
     ofParameter<float> maxForce{"maxForce", 0.001f, 0.0f, 0.01f};
     ofParameter<float> maxRepulsion{"maxRepulsion", 0.001f, 0.0f, 0.01f};
@@ -92,16 +93,16 @@ public:
     ofParameter<int> length{"Length", 200, 1, 1000};
     ofParameter<bool> doModulate{"doModulate", true};
     ofParameter<ofFloatColor> lineColor{ "lineColor", ofFloatColor::cyan };
-
-    ofParameterGroup parameters{"Walker", movementPattern, speed, maxForce, maxRepulsion, maxRepulsionSpeed, minDistancePred, length, doModulate,lineColor};
-
-
+    
+    ofParameterGroup parameters{"Walker", scaler, speed, maxForce, maxRepulsion, maxRepulsionSpeed, minDistancePred, length, doModulate,lineColor};
+    
+    
     glm::vec3 pos;
     glm::vec3 vel;
     glm::vec3 target;
     
     RandomWithoutRepeate random;
-
+    
     vector<Attractor> attractors;
     int activeAttractor;
     
@@ -109,7 +110,33 @@ public:
     
     ofPolyline zone;
     ofPolyline poly;
-
+    
+    ofFloatPixels boundaryPixels;
+    ofImage boundaryImage;
+    bool hasBoundaryPixels = false;
+    
+    
+    void setBoundaryPixels(ofFloatPixels boundaryPixels){
+        this->boundaryPixels = boundaryPixels;
+        hasBoundaryPixels = true;
+        
+        boundaryImage.setFromPixels(boundaryPixels.getChannel(0));
+        boundaryImage.update();
+        checkAttracktorsWithinBoarders();
+        
+    }
+    
+    void checkAttracktorsWithinBoarders(){
+        if(!hasBoundaryPixels) return;
+        for(auto & a : attractors){
+            int w = boundaryPixels.getWidth();
+            int h = boundaryPixels.getHeight();
+            while(boundaryPixels.getColor(a.getPos().x*w, a.getPos().y*h).r > 0.8){
+                a.setPos( glm::vec3(ofRandom(80)/100.0+0.1, ofRandom(80)/100.0+0.1, 0) );
+            }
+        }
+    }
+    
     
     // for ZigZag
     bool firstTime;
@@ -119,7 +146,7 @@ public:
     // for spiral
     float splineIndex = 0;
     float dist = 0;
-
+    
     Modulator modulator;
     
     Walker(){
@@ -139,9 +166,9 @@ public:
     }
     
     void setup(){
-
-
-
+        
+        
+        
     }
     
     void addZone(ofPolyline &zone){
@@ -151,31 +178,31 @@ public:
     void seek(glm::vec3 target) {
         glm::vec3 desired = target - pos;
         desired = glm::normalize(desired);
-        desired = desired * speed.get();
+        desired = desired * speed.get()*scaler.get();
         glm::vec3 steer = desired - vel;
-        if(glm::length(steer)>maxForce.get()) steer = glm::normalize(steer)*maxForce.get();
+        if(glm::length(steer)>maxForce.get()*scaler.get()) steer = glm::normalize(steer)*maxForce.get()*scaler.get();
         vel = vel + steer;
     }
     
     void avoid(glm::vec3 target, float minDistance) {
         
         float distance = glm::distance(pos,target);
-//        distance = glm::clamp(distance,0.01f,0.4f);
+        //        distance = glm::clamp(distance,0.01f,0.4f);
         if(distance<minDistance){
             glm::vec3 predator = target - pos;
-
-            predator = glm::normalize(predator);
-//            predator = predator / distance;
             
-            predator = predator * maxRepulsionSpeed.get();
+            predator = glm::normalize(predator);
+            //            predator = predator / distance;
+            
+            predator = predator * maxRepulsionSpeed.get()*scaler.get();
             glm::vec3 steer = (predator - vel)*(-1.0);
-            if(glm::length(steer)>maxRepulsion.get()) steer = glm::normalize(steer)*maxRepulsion.get();
+            if(glm::length(steer)>maxRepulsion.get()*scaler.get()) steer = glm::normalize(steer)*maxRepulsion.get()*scaler.get();
             vel = vel + steer;
         }
-
+        
     }
     
-    
+    bool bBorders = false;
     void update(){
         // Noise based Movement
         
@@ -185,13 +212,26 @@ public:
                 seek(target);
                 
                 // AVOID WALLS
-                float boarder = 0.025;
-                bool bBorders = false;
+//                float boarder = 0.025;
                 glm::vec3 desired = glm::vec3(0);
-                if(pos.x > 1-boarder){ bBorders = true; desired = glm::vec3(-speed.get(),vel.y,0);}
-                if(pos.x < boarder)  { bBorders = true; desired = glm::vec3(speed.get(),vel.y,0);}
-                if(pos.y > 1-boarder){ bBorders = true; desired = glm::vec3(vel.x,-speed.get(),0);}
-                if(pos.y < boarder)  { bBorders = true; desired = glm::vec3(vel.x,speed.get(),0);}
+//                if(pos.x > 1-boarder){ bBorders = true; desired = glm::vec3(-speed.get(),vel.y,0);}
+//                if(pos.x < boarder)  { bBorders = true; desired = glm::vec3(speed.get(),vel.y,0);}
+//                if(pos.y > 1-boarder){ bBorders = true; desired = glm::vec3(vel.x,-speed.get(),0);}
+//                if(pos.y < boarder)  { bBorders = true; desired = glm::vec3(vel.x,speed.get(),0);}
+                
+                
+                int w = boundaryPixels.getWidth();
+                int h = boundaryPixels.getHeight();
+                ofFloatColor bCol = boundaryPixels.getColor(pos.x*w, pos.y*h);
+                //                cout << pos.x*w << " / " << pos.y*h << endl;
+                if(bCol.r<0.2) bBorders = false;
+
+                if(bCol.r > 0.81 || bBorders){
+                    bBorders = true;
+                    desired = glm::vec3(-(bCol.g-0.5), -(bCol.b-0.5),0)*speed.get();
+                    seek(glm::vec3(0.5,0.5,0));
+                }
+                
                 if(bBorders){
                     glm::vec3 steer = desired - vel;
                     if(glm::length(steer)>speed.get()) steer = glm::normalize(steer)*speed.get();
@@ -201,14 +241,14 @@ public:
                 for(int i = 0; i< attractors.size(); i++){
                     if(i!=activeAttractor){
                         avoid(attractors[i].getPos(), minDistancePred);
-//                        glm::vec2 repulsion = - attractors[i].getAttraction(pos);
-//                        repulsion = repulsion * maxRepulsion.get();
-//                        if(glm::length(repulsion)>maxRepulsion.get()) repulsion = glm::normalize(repulsion)*maxRepulsion.get();
-//                        vel = vel + repulsion;
+                        //                        glm::vec2 repulsion = - attractors[i].getAttraction(pos);
+                        //                        repulsion = repulsion * maxRepulsion.get()*scaler.get();
+                        //                        if(glm::length(repulsion)>maxRepulsion.get()*scaler.get()) repulsion = glm::normalize(repulsion)*maxRepulsion.get()*scaler.get();
+                        //                        vel = vel + repulsion;
                         
                     }
                 }
-
+                
                 
                 if(glm::distance(pos,target)<0.01){
                     activeAttractor=random.getNext();
@@ -220,22 +260,22 @@ public:
                     attractors[activeAttractor].deactivate();
                     
                     target=attractors[activeAttractor].getPos();
-
+                    
                 }
             }
                 break;
             case ATTRACTIONS:
             {
                 vel = vel + attractors[activeAttractor].getAttraction(pos);
-//
-//                for(auto & attractor : attractors){
-//                    if(attractor.isActive()){
-//                        vel = vel + attractor.getAttraction(pos);
-//                        if(glm::distance(pos,attractor.getPos())<0.1){
-//                            attractor.deactivate();
-//                        }
-//                    }
-//                }
+                //
+                //                for(auto & attractor : attractors){
+                //                    if(attractor.isActive()){
+                //                        vel = vel + attractor.getAttraction(pos);
+                //                        if(glm::distance(pos,attractor.getPos())<0.1){
+                //                            attractor.deactivate();
+                //                        }
+                //                    }
+                //                }
                 if(glm::distance(pos,target)<0.1){
                     activeAttractor=random.getNext();
                     
@@ -244,9 +284,9 @@ public:
                         attractor.activate();
                     }
                 }
-//                target = zone.getCentroid2D();
-//                vel = vel + glm::distance(pos,target)*normVecToTarget(target);
-//                vel = glm::normalize(vel);
+                //                target = zone.getCentroid2D();
+                //                vel = vel + glm::distance(pos,target)*normVecToTarget(target);
+                //                vel = glm::normalize(vel);
             }
                 break;
                 
@@ -265,7 +305,7 @@ public:
                     }
                     
                 }
-                    vel = glm::normalize(vel);
+                vel = glm::normalize(vel);
             }
                 break;
                 
@@ -287,17 +327,17 @@ public:
                         index += offset;
                         index = index%zone.size();
                         target = zone[index];
-//                        target = zone.getPointAtPercent(ofRandom(100)/100.0);
+                        //                        target = zone.getPointAtPercent(ofRandom(100)/100.0);
                     }
-
+                    
                 }else{
                     target = zone.getClosestPoint(pos);//zone.getBoundingBox().getCenter();
                     firstTime = true;
-            
+                    
                     
                 }
                 vel = normVecToTarget(target);
-
+                
             }
                 break;
                 
@@ -318,13 +358,13 @@ public:
                     splineIndex += speed;
                     float length = splineIndex;
                     length += offset;
-
+                    
                     length = glm::mod<float>(length, zone.getLengthAtIndex(zone.size()-1));
                     float index =  zone.getIndexAtLength(length);
                     
                     float distance = dist;
-//                    float d = glm::distance(pos, closestPoint);
-//                    if(abs(index-closestPointIndex) >0.01) distance = d;
+                    //                    float d = glm::distance(pos, closestPoint);
+                    //                    if(abs(index-closestPointIndex) >0.01) distance = d;
                     
                     pos = zone.getPointAtIndexInterpolated(index) + (zone.getNormalAtIndex(index)*distance);
                     vel = glm::vec3(0);
@@ -348,7 +388,7 @@ public:
                     mousePos.y = ofGetMouseY()/(float)ofGetHeight();
                     vel = normVecToTarget(mousePos);
                 }
-
+                
             }
                 break;
                 
@@ -372,18 +412,18 @@ public:
         if(glm::length(vel)>speed)   vel = glm::normalize(vel)*(float)speed;
         
         pos = pos + vel;
-
-//        pos = pos + glm::vec3();
+        
+        //        pos = pos + glm::vec3();
         
         //    pos = pos +
         
         glm::vec3 linePos = glm::vec3(0.0f,0.0f,0.0f);
-
+        
         // ADD MODULATION
         modulator.update();
         if( doModulate ) linePos = modulator.getModualtedPos(pos, vel);
         else linePos = pos ;
-
+        
         
         // jump walls
         if(linePos.x > 1) pos.x = linePos.x-1;
@@ -402,7 +442,7 @@ public:
         //  create poly
         poly.clear();
         poly.addVertices(history);
-
+        
     }
     
     glm::vec3 normVecToTarget(glm::vec3 t){
@@ -415,9 +455,16 @@ public:
     }
     
     void draw(int x, int y, int w, int h){
+        if(bBorders){
+            ofPushStyle();
+            ofFloatColor c = boundaryPixels.getColor(pos.x*boundaryPixels.getWidth(), pos.y*boundaryPixels.getHeight());
+            ofSetColor(255*c.r,0,0);
+            boundaryImage.draw(x,y,w,h);
+            ofPopStyle();
+        }
         
+        ofPushStyle();
         ofSetLineWidth(2);
-        
         
         ofPushMatrix();
         {
@@ -428,8 +475,8 @@ public:
             
             ofSetColor(ofColor::red);
             ofDrawCircle(pos, 5./w);
-//            ofDrawCircle(pos+vel*10, 5./w);
-
+            //            ofDrawCircle(pos+vel*10, 5./w);
+            
             ofSetColor(lineColor.get());
             poly.draw();
             
@@ -440,17 +487,18 @@ public:
             
             ofSetColor(ofColor::blue);
             ofDrawCircle(target, 5./w);
-
+            
         }
         ofPopMatrix();
-        
         ofSetColor(ofColor::orange);
         modulator.draw(pos.x*w+x, pos.y*h+y, w, h);
         
         
-
+        ofPopStyle();
+        
         
     }
 };
 
 #endif /* Walker_h */
+

@@ -69,17 +69,18 @@ void CalibrationHandler::setupDefaultParams(){
     appParams.add( timeMinBetweenCaptures.set("Time min between captures", 2.0, 0, 10) );
     
     boardsParams.setName("Boards Params");
-    boardsParams.add( numBoardsFinalCamera.set("Num boards Camera", 20, 10, 30) );
-    boardsParams.add( numBoardsFinalProjector.set("Num boards Projector", 12, 6, 15) );
-    boardsParams.add( numBoardsBeforeCleaning.set("Num boards before cleaning", 8, 5, 10) );
+    boardsParams.add( numBoardsFinalCamera.set("Num boards Camera", 20, 10, 50) );
+    boardsParams.add( numBoardsFinalProjector.set("Num boards Projector", 12, 6, 50) );
+    boardsParams.add( numBoardsBeforeCleaning.set("Num boards before cleaning", 8, 5, 20) );
     boardsParams.add( numBoardsBeforeDynamicProjection.set("Num boards before dynamic proj", 5, 3, 10) );
     boardsParams.add( maxReprojErrorCamera.set("Max reproj error Camera", 0.2, 0.1, 2.5) );
-    boardsParams.add( maxReprojErrorProjector.set("Max reproj error Projector", 0.6, 0.1, 1.0) );
+    boardsParams.add( maxReprojErrorProjector.set("Max reproj error Projector", 0.2, 0.1, 2.5) );
     
     imageProcessingParams.setName("Processing Params");
     imageProcessingParams.add( alternativeProcessing.set("alternative Processing", false) );
     imageProcessingParams.add( circleDetectionThreshold.set("Circle image threshold", 220, 150, 255) );
-    
+    imageProcessingParams.add( denoise.set("denoise", 1, 6, 12) );
+
     parameters.add( currStateString.set("Current State", getCurrentStateString()) );
     
     parameters.add(appParams);
@@ -153,7 +154,6 @@ void CalibrationHandler::update(){
     
     camMat = ipCam.get();
     cam.update();
-    laserHandler.update();
 //    if(cam.isFrameNew())
     {
 //        Mat camMat = toCv(cam);
@@ -169,6 +169,7 @@ void CalibrationHandler::update(){
                 break;
                 
             case PROJECTOR_STATIC:
+                laserHandler.update();
                 if( !updateCamDiff(camMat) ) return;
                 
                 if( calibrateProjector(camMat) ){
@@ -177,6 +178,7 @@ void CalibrationHandler::update(){
                 break;
                 
             case PROJECTOR_DYNAMIC:
+                laserHandler.update();
                 if(bProjectorRefreshLock){
                     if( camProjCalib.setDynamicProjectorImagePoints(camMat) ){
                         createLaserPattern();
@@ -254,6 +256,13 @@ void CalibrationHandler::processImageForCircleDetection(cv::Mat img){
             processedImg = img;
         }
         cv::threshold(processedImg, processedImg, circleDetectionThreshold, 255, cv::THRESH_BINARY_INV);
+        //morphological opening (removes small objects from the foreground)
+        erode(processedImg, processedImg, getStructuringElement(MORPH_ELLIPSE, cv::Size(denoise, denoise)) );
+        dilate( processedImg, processedImg, getStructuringElement(MORPH_ELLIPSE, cv::Size(denoise, denoise)) );
+        
+        //morphological closing (removes small holes from the foreground)
+        dilate( processedImg, processedImg, getStructuringElement(MORPH_ELLIPSE, cv::Size(denoise, denoise)) );
+        erode(processedImg, processedImg, getStructuringElement(MORPH_ELLIPSE, cv::Size(denoise, denoise)) );
     }
 }
 
@@ -362,19 +371,19 @@ bool CalibrationHandler::calibrateProjector(cv::Mat img){
 #pragma mark - Draw
 
 void CalibrationHandler::draw(){
-//    cam.update();
+    //    cam.update();
     ofSetColor(255);
-//    cam.draw(0, 0);
+    //    cam.draw(0, 0);
     ofxCv::drawMat(camMat,0,0);
-
+    
     drawFoundImagePoints(camProjCalib.getCalibrationCamera());
     
     
     drawIntrinsics("Camera", camProjCalib.getCalibrationCamera(), 20);
     drawIntrinsics("Projector", camProjCalib.getCalibrationProjector(), 40);
-
+    
     ofDrawBitmapStringHighlight("Movement: "+ofToString(diffMean), 10, 60, ofxCv::cyanPrint);
-
+    
     drawReprojErrors("Camera", camProjCalib.getCalibrationCamera(), 80);
     
     
@@ -384,27 +393,31 @@ void CalibrationHandler::draw(){
             if(camProjCalib.getCalibrationCamera().size() > 0) {
                 camProjCalib.getCalibrationCamera().undistort(camMat, toCv(undistorted));
                 undistorted.update();
-                undistorted.draw(0, cam.getHeight()-undistorted.getHeight()/4, undistorted.getWidth()/4, undistorted.getHeight()/4);
+                undistorted.draw(0, 0, 720, 1280/4, 720/4);
                 ofSetColor(255, 80);
                 undistorted.draw(0, 0);
-
+                ofSetColor(255);
+                
             }
             break;
         case PROJECTOR_STATIC:
         case PROJECTOR_DYNAMIC:
             drawReprojErrors("Projector", camProjCalib.getCalibrationProjector(), 100);
             drawReprojLog(camProjCalib.getCalibrationProjector(), 120);
+            
+            camProjCalib.getCalibrationCamera().undistort(camMat, toCv(undistorted));
+            undistorted.update();
+            undistorted.draw(0, 0, 720, 1280/4, 720/4);
+            ofSetColor(255, 80);
+            undistorted.draw(0, 0);
+            ofSetColor(255);
             if(ofxCv::getAllocated(processedImg)){
-                toOf(processedImg, ofImg);
-                ofImg.update();
-                ofImg.draw(undistorted.getWidth()/4, cam.getHeight(), ofImg.getWidth()/4, ofImg.getHeight()/4);
-//                ofxCv::drawMat(processedImg, 640, 0, 320, 240);
+                ofxCv::drawMat(processedImg,1280/4, 720, 1280/4, 720/4);
             }
-            undistorted.draw(0, cam.getHeight(), undistorted.getWidth()/4, undistorted.getHeight()/4);
-
-
-            laserHandler.draw(1049,480,409,409);
-
+            
+            
+            laserHandler.draw(1280*3/4,720,320,320);
+            
             break;
             
         case RUN:
@@ -423,7 +436,7 @@ void CalibrationHandler::draw(){
             
             // project the inputPts over the object
             ofPushMatrix();
-            ofTranslate(cam.getWidth()/2, cam.getHeight()/2);
+            ofTranslate(1280/2, 720/2);
             ofSetColor(ofColor::red);
             for (int i=0; i<outPts.size(); i++){
                 int next = (i+1) % outPts.size();
@@ -431,8 +444,8 @@ void CalibrationHandler::draw(){
             }
             ofPopMatrix();
             
-            laserHandler.draw(1049,480,409,409);
-
+            laserHandler.draw(1280/2,720,320,320);
+            
         }
             break;
             
@@ -440,20 +453,19 @@ void CalibrationHandler::draw(){
             break;
     }
     
-
     
-
     
-    ofDrawBitmapString(getLog(10), 10, cam.getHeight()+20);
-//    projectorFbo.draw(640,480,409,409);
-//    ofNoFill();
-//    ofSetColor(150);
-//    ofDrawRectangle(640,480,409,409);
-//    ofPushMatrix();
-//    ofTranslate(640,480);
-//    ofScale(0.1);
-//    drawFoundImagePoints(camProjCalib.getCalibrationProjector());
-//    ofPopMatrix();
+    
+    ofDrawBitmapString(getLog(10), 10, 720+720/4+20);
+    //    projectorFbo.draw(640,480,409,409);
+    //    ofNoFill();
+    //    ofSetColor(150);
+    //    ofDrawRectangle(640,480,409,409);
+    //    ofPushMatrix();
+    //    ofTranslate(640,480);
+    //    ofScale(0.1);
+    //    drawFoundImagePoints(camProjCalib.getCalibrationProjector());
+    //    ofPopMatrix();
 
 }
 
@@ -526,7 +538,10 @@ void CalibrationHandler::createLaserPattern(){
     vector<ofPolyline> laserPolys;
     for(const auto & p : camProjCalib.getCalibrationProjector().getCandidateImagePoints()) {
         ofPolyline laserPoly;
-        laserPoly.addVertex(glm::vec3(p.x/4096.0f, p.y/4096.0f,0));
+        glm::vec3 pos = glm::vec3(p.x/4096.f, p.y/4096.f,0);
+        if(pos.x < 0 || pos.x > 1) continue;
+        if(pos.y < 0 || pos.y > 1) continue;
+        laserPoly.addVertex(pos);
         laserPolys.push_back(laserPoly);
     }
     laserHandler.set(laserPolys);

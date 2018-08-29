@@ -1,0 +1,36 @@
+{
+    "group": {
+        "IldaFrame_Params": {
+            "Do_Cap_X": "0",
+            "Do_Cap_Y": "0",
+            "Do_Flip_X": "0",
+            "Do_Flip_Y": "0",
+            "Draw_Lines": "1",
+            "Draw_Point_nums": "0",
+            "Draw_Points": "1",
+            "Draw_finalPoints": "0",
+            "Offset": "0, 0",
+            "PolyProcessor": {
+                "optimizeTolerance": "0",
+                "smoothAmount": "0",
+                "spacing": "0.007984",
+                "targetPointCount": "500"
+            },
+            "Scale": "0, 0",
+            "displaceAmount": "0",
+            "doDisplace": "0",
+            "doFade": "0",
+            "end_Blanks": "10",
+            "end_Count": "10",
+            "fadeLength": "0",
+            "masterColor": "1, 1, 1, 1",
+            "start_Blanks": "10",
+            "start_Count": "10",
+            "useColorMap": "0"
+        },
+        "Laser": {
+            "LASER_PPSx1000": "30",
+            "isActivated": "0"
+        }
+    }
+}

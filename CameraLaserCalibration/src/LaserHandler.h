@@ -12,7 +12,7 @@
 #include "ofxIldaFrame.h"
 #include "ofxGui.h"
 
-class LaserHandler : public ofThread{
+class LaserHandler{
 public:
     ofxRayComposer dac;
     ofxIlda::Frame ildaFrame;
@@ -24,7 +24,7 @@ public:
     
     
     void setup(){
-        dac.setup(true, 0, false);
+        dac.setup(true, 0, true);
         dac.setPPS(18000);
         ildaFrame.setup();
         
@@ -34,28 +34,10 @@ public:
         
         createTestRect();
         
-//        startThread();
     }
     
     void set(vector<ofPolyline> laserPolys){
-//        if(tryLock()){
-//        lock();
             this->laserPolys = laserPolys;
-//            unlock();
-//        }
-    }
-    
-    void threadedFunction(){
-        ildaFrame.clear();
-        
-        if(bTestframe){
-            ildaFrame.addPoly(testRect,ofFloatColor(1.0,1.0,1.0,1.0));
-        }else{
-            ildaFrame.addPolys(laserPolys,ofFloatColor(1.0,1.0,1.0,1.0));
-        }
-        
-        ildaFrame.update();
-        dac.setPoints(ildaFrame);
     }
     
     void update(){
@@ -72,18 +54,14 @@ public:
     }
     
     void draw(int x, int y, int w, int h){
-        if(tryLock()){
             ildaFrame.draw(x,y,w,h);
             ofNoFill();
             ofSetColor(150);
             ofSetLineWidth(2);
             ofDrawRectangle(x,y,w,h);
-            unlock();
-        }
     }
     
     void close(){
-        stopThread();
     }
     
     void createTestRect(){

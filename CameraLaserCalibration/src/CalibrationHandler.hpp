@@ -108,6 +108,7 @@ public:
     ofParameterGroup imageProcessingParams;
     ofParameter<bool> alternativeProcessing;
     ofParameter<int> circleDetectionThreshold;
+    ofParameter<int> denoise;
 
     ofFbo projectorFbo;
     

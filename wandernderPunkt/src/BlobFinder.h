@@ -8,50 +8,52 @@
 #ifndef BlobFinder_h
 #define BlobFinder_h
 
-#include "ofxOpenCv.h"
+#include "ofxCv.h"
 
 class BlobFinder{
 public:
     
-    ofParameter<bool> drawColorImg{"drawColorImg", true};
-    ofParameter<bool> drawGreyImg{"drawGreyImg", true};
-    ofParameter<bool> drawBlobs{"drawBlobs", true};
-    ofParameterGroup parameters{"BlobFinder", drawColorImg, drawGreyImg, drawBlobs};
+    ofxCv::ContourFinder contourFinder;
+    
+    ofParameterGroup parameters;
+    ofParameter<float> minArea, maxArea, threshold;
+    ofParameter<bool> holes;
     
 
     
     ofImage img;
     ofPolyline zone;
-    
-    ofxCvColorImage            colorImg;
-    ofxCvGrayscaleImage     grayImage;
-    ofxCvContourFinder     contourFinder;
+
     
     
     void setup(){
         img.load("test.png");
-        colorImg.allocate(img.getWidth(), img.getHeight());
-        grayImage.allocate(img.getWidth(), img.getHeight());
+        
+        parameters.add(minArea.set("Min area", 10, 1, 100));
+        parameters.add(maxArea.set("Max area", 200, 1, 500));
+        parameters.add(threshold.set("Threshold", 128, 0, 255));
+        parameters.add(holes.set("Holes", false));
     }
     
     void update(){
-        colorImg.setFromPixels(img.getPixels());
-        grayImage = colorImg;
-        
-        contourFinder.findContours(grayImage, 20, (img.getWidth() * img.getHeight())/2, 10, true);    // find holes
-        
+        contourFinder.setMinAreaRadius(minArea);
+        contourFinder.setMaxAreaRadius(maxArea);
+        contourFinder.setThreshold(threshold);
+        contourFinder.findContours(ofxCv::toCv(img));
+        contourFinder.setFindHoles(holes);
     }
     
     ofPolyline & getZone(int indx){
-        if(contourFinder.blobs.size()>0){
-            zone.clear();
-            for(auto & pts : contourFinder.blobs[indx].pts){
-                zone.addVertex(pts.x/img.getWidth(), pts.y/img.getHeight());
-            }
-            zone.close();
-            zone.flagHasChanged();
-        }
-        return zone;
+        return contourFinder.getPolyline(indx);
+//        if(contourFinder.blobs.size()>0){
+//            zone.clear();
+//            for(auto & pts : contourFinder.blobs[indx].pts){
+//                zone.addVertex(pts.x/img.getWidth(), pts.y/img.getHeight());
+//            }
+//            zone.close();
+//            zone.flagHasChanged();
+//        }
+//        return zone;
     }
     
     void draw(int x, int y, int w, int h){
@@ -61,20 +63,8 @@ public:
             ofScale(w/img.getWidth(), h/img.getHeight());
             
             ofSetColor(255);
-            if(drawColorImg.get()) img.draw(0,0);
-            if(drawGreyImg.get())  grayImage.draw(0,0);
-            
-            if(drawBlobs.get()){
-                for (int i = 0; i < contourFinder.nBlobs; i++){
-                    contourFinder.blobs[i].draw(0,0);
-                    ofDrawBitmapString(ofToString(i), contourFinder.blobs[i].boundingRect.getCenter().x, contourFinder.blobs[i].boundingRect.getCenter().y);
-                    // draw over the centroid if the blob is a hole
-                    ofSetColor(255);
-                    if(contourFinder.blobs[i].hole){
-                        ofDrawBitmapString("hole", contourFinder.blobs[i].boundingRect.getCenter().x, contourFinder.blobs[i].boundingRect.getCenter().y);
-                    }
-                }
-            }
+            img.draw(0,0);
+            contourFinder.draw();
         }
         ofPopMatrix();
     }

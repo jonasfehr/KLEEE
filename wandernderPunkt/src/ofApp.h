@@ -9,14 +9,26 @@
 #include "ofxRayComposer.h"
 #include "ofxIldaFrame.h"
 #include "ofxGui.h"
+#include "ofxIpCamStreamer.h"
+#include "Segmentator.h"
 
 class ofApp : public ofBaseApp{
 public:
+    
+    enum Status{
+        SELECT_ROI,
+        SEGMENTATION,
+        RUN
+    } state;
+    
+    string currentState;
 
     
 		void setup();
+        void setStatus(int state);
 		void update();
 		void draw();
+        void exit();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -30,12 +42,16 @@ public:
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    
+    bool firstTime;
     // Gui
 //    bool imGui();
 //    ofxImGui::Gui gui;
 //    bool guiVisible;
 //    bool mouseOverGui;
+    
+    ofxPanel guiLaser;
+    ofxPanel guiSegmentation;
+
     
     ofxPanel gui;
     ofParameter<bool> isActivated{"isActivated", false};
@@ -55,4 +71,57 @@ public:
     ofxRayComposer dac;
     ofxIlda::Frame ildaFrame;
 
+    ofxIpCamStreamer ipCam;
+    Mat camMat;
+    Mat roiMat;
+    void saveRoi(string filename);
+    void loadRoi(string filename);
+    ofJson vec3ToJson(glm::vec3 vec);
+    glm::vec3 jsonToVec3(ofJson json);
+    ofJson vec2ToJson(glm::vec2 vec);
+    glm::vec2 jsonToVec2(ofJson json);
+    
+    vector<glm::vec2> srcPoints;
+    
+    // variables for dragging points
+    bool movingPoint;
+    glm::vec2* curPoint;
+
+    ofPolyline testRect;
+    void createTestRect(){
+        testRect.addVertex(0.001, 0.001);
+        testRect.addVertex(0.999, 0.001);
+        testRect.addVertex(0.999, 0.999);
+        testRect.addVertex(0.001, 0.999);
+        testRect.close();
+    }
+    
+    Segmentator segmentator;
+    
+    ofImage imageLoad;
+    
+    bool cmdDown;
+    
+    string type2str(int type) {
+        string r;
+        
+        uchar depth = type & CV_MAT_DEPTH_MASK;
+        uchar chans = 1 + (type >> CV_CN_SHIFT);
+        
+        switch ( depth ) {
+            case CV_8U:  r = "8U"; break;
+            case CV_8S:  r = "8S"; break;
+            case CV_16U: r = "16U"; break;
+            case CV_16S: r = "16S"; break;
+            case CV_32S: r = "32S"; break;
+            case CV_32F: r = "32F"; break;
+            case CV_64F: r = "64F"; break;
+            default:     r = "User"; break;
+        }
+        
+        r += "C";
+        r += (chans+'0');
+        
+        return r;
+    }
 };

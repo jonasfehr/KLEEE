@@ -1,8 +1,6 @@
+ofxCv
 ofxGui
 ofxIlda
-ofxImGui
-ofxLaserProjector
-ofxOpenCv
+ofxIpCamStreamer
+ofxOpencvHomebrew
 ofxRayComposer
-ofxSyphon
-ofxSyphonUtils
