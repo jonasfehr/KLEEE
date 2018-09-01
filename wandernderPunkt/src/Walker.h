@@ -29,6 +29,7 @@ public:
         mass = 0.000001;
         G = 1;
         bActive = true;
+        vel = glm::normalize(pos-glm::vec3(0.5,0.5,0));
     }
     
     glm::vec3 getAttraction(glm::vec3 pos){
@@ -51,6 +52,9 @@ public:
     void setPos(glm::vec3 pos ){ this->pos = pos;}
     glm::vec3 getPos(){ return pos;}
     
+    
+    glm::vec3 vel;
+
 private:
     bool bActive;
     glm::vec3 pos;
@@ -92,9 +96,11 @@ public:
     ofParameter<float> minDistancePred{"minDistancePred", 0.1f, 0.0f, 1.0f};
     ofParameter<int> length{"Length", 200, 1, 1000};
     ofParameter<bool> doModulate{"doModulate", true};
+    ofParameter<float> attractorMove{"attractorMove", 0.0001f, 0.0f, 0.001f};
+
     ofParameter<ofFloatColor> lineColor{ "lineColor", ofFloatColor::cyan };
     
-    ofParameterGroup parameters{"Walker", scaler, speed, maxForce, maxRepulsion, maxRepulsionSpeed, minDistancePred, length, doModulate,lineColor};
+    ofParameterGroup parameters{"Walker", scaler, speed, maxForce, maxRepulsion, maxRepulsionSpeed, minDistancePred, length, doModulate,attractorMove,lineColor};
     
     
     glm::vec3 pos;
@@ -132,7 +138,7 @@ public:
             int w = boundaryPixels.getWidth();
             int h = boundaryPixels.getHeight();
             while(boundaryPixels.getColor(a.getPos().x*w, a.getPos().y*h).r > 0.8){
-                a.setPos( glm::vec3(ofRandom(80)/100.0+0.1, ofRandom(80)/100.0+0.1, 0) );
+                a = Attractor();
             }
         }
     }
@@ -262,6 +268,15 @@ public:
                     target=attractors[activeAttractor].getPos();
                     
                 }
+                // activate all attractors exept the one which is target
+                for(auto & attractor : attractors){
+                    
+                    attractor.setPos( attractor.getPos()+attractor.vel*attractorMove.get());
+                    ofFloatColor bCol = boundaryPixels.getColor(attractor.getPos().x*w, attractor.getPos().y*h);
+                    if(bCol.r > 0.80) attractor.vel*= -1;
+
+                }
+                
             }
                 break;
             case ATTRACTIONS:

@@ -2,5 +2,6 @@ ofxCv
 ofxGui
 ofxIlda
 ofxIpCamStreamer
-ofxOpencvHomebrew
+ofxOpenCvHomebrew
+ofxOsc
 ofxRayComposer

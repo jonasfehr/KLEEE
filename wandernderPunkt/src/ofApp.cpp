@@ -60,6 +60,8 @@ void ofApp::setup(){
     
     camMat = Mat::zeros(1920,1080,CV_8UC3);
 
+    sync.setup((ofParameterGroup&)gui.getParameter(),8888,"localhost",8889);
+
 }
 
 void ofApp::listenerFunction(ofAbstractParameter& e){
@@ -169,6 +171,8 @@ void ofApp::update(){
             ildaFrame.update();
             // send points to the DAC
             if(isActivated.get()) dac.setPoints(ildaFrame);
+            
+            sync.update();
 
         } break;
             

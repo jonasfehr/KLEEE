@@ -11,6 +11,7 @@
 #include "ofxGui.h"
 #include "ofxIpCamStreamer.h"
 #include "Segmentator.h"
+#include "ofxOscParameterSync.h"
 
 class ofApp : public ofBaseApp{
 public:
@@ -124,4 +125,7 @@ public:
         
         return r;
     }
+    
+    ofxOscParameterSync sync;
+
 };
