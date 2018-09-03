@@ -7,37 +7,22 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     setStatus(SELECT_ROI);
-    firstTime = true;
-
-    
-//    syphonIn.setup("Normal", "MadMapper");
-    
-    walker.setup();
-
- 
-    
-//    blobFinder.setup();
-//    blobFinder.update();
-////    walker.addZone(blobFinder.getZone(0));
-    
-//    int x = ofGetWidth()-ofGetHeight();
-//    int y = 0;
-//    int w = ofGetHeight();
-//    int h = ofGetHeight();
-//    laserProjector.setup("mainLaser", 0, x, y, w, h);
+    firstTime = false;
 
     dac.setup(true, 0, true);
     dac.setPPS(LASER_PPSx1000*1000);
     ildaFrame.setup();
     
-//    // Gui
-//    this->gui.setup();
-//    this->guiVisible = true;
-    
+    // Guis
     gui.setup();
     gui.add(walker.parameters);
     gui.setPosition(220,10);
-//    gui.add(blobFinder.parameters);
+    sync.setup((ofParameterGroup&)gui.getParameter(),8888,"localhost",8889);
+
+
+    guiIPCam.setup();
+    guiIPCam.add(ipCam.parameters);
+    guiIPCam.setPosition(220,10);
     
     guiLaser.setup();
     guiLaser.add(parameters);
@@ -46,22 +31,13 @@ void ofApp::setup(){
     guiSegmentation.setup();
     guiSegmentation.add(segmentator.parametersFilters);
     guiSegmentation.add(segmentator.parametersSLIC);
-//    guiSegmentation.add(segmentator.parametersSelectiveSearch);
-//    guiSegmentation.add(segmentator.parametersSpectralSegment);
 
     ofAddListener(parameters.parameterChangedE(), this, &ofApp::listenerFunction);
     
-    roiMat.create(1024,1024,CV_8UC3);
-
     createTestRect();
     
-    imageLoad.load("camMat_day.jpg");
-//    imageLoad.load("gartenBW_169.jpg");
-    
+    roiMat.create(1024,1024,CV_8UC3);
     camMat = Mat::zeros(1920,1080,CV_8UC3);
-
-    sync.setup((ofParameterGroup&)gui.getParameter(),8888,"localhost",8889);
-
 }
 
 void ofApp::listenerFunction(ofAbstractParameter& e){
@@ -88,10 +64,6 @@ void ofApp::setStatus(int newState){
             srcPoints.push_back(glm::vec2(80,710));
             
             loadRoi("settingRoi.json");
-
-
-//            ipCam.start();
-
         } break;
             
         case SEGMENTATION:
@@ -104,8 +76,13 @@ void ofApp::setStatus(int newState){
             
             segmentator.doUpdate = true;
             
-//            ipCam.stop();
-
+            
+            ofImage ofImg;
+            toOf(camMat, ofImg);
+            ofImg.save("captures/inputImages/"+ofGetTimestampString("%y%m%d_%H-%M-%S")+"_inputImage.jpg", OF_IMAGE_QUALITY_BEST);
+            
+            toOf(roiMat, ofImg);
+            ofImg.save("captures/roi/"+ofGetTimestampString("%y%m%d_%H-%M-%S")+"_roi.jpg", OF_IMAGE_QUALITY_BEST);
         } break;
             
         case RUN:
@@ -118,10 +95,8 @@ void ofApp::setStatus(int newState){
             guiLaser.loadFromFile("settingsLaser_Run.json");
             gui.loadFromFile("settingsWalker.json");
             
-            Segmentator::SuperPixel spSky;
+            SuperPixel spSky;
             for(auto & sp: segmentator.superPixels)if(sp.isTopRow) walker.setBoundaryPixels(sp.getBoundaryPixels());
-
-
         } break;
             
         default:
@@ -136,17 +111,12 @@ void ofApp::update(){
         case SELECT_ROI:
         {
             camMat = ipCam.get();
-//
-//            ofImage ofImg;
-//            toOf(camMat, ofImg);
-//            ofImg.save("camMat.jpg", OF_IMAGE_QUALITY_BEST);
             
-            camMat = toCv(imageLoad);
             vector<cv::Point2f> srcPts;
             for(auto & p :srcPoints) {
                 srcPts.push_back(cv::Point2f(p.x*camMat.cols/CAM_PREVIEW_W,p.y*camMat.rows/CAM_PREVIEW_H));
             }
-            ofxCv::unwarpPerspective(camMat, roiMat, srcPts);
+            if(camMat.rows > 0) ofxCv::unwarpPerspective(camMat, roiMat, srcPts);
             
             ildaFrame.clear();
             ildaFrame.addPoly(testRect,ofFloatColor::white);
@@ -159,8 +129,7 @@ void ofApp::update(){
             
         case SEGMENTATION:
         {
-//            segmentator.slic(roiMat);
-            segmentator.slicGray(roiMat);
+            segmentator.slic(roiMat);
         } break;
             
         case RUN:
@@ -198,12 +167,20 @@ void ofApp::draw(){
         {
             ofxCv::drawMat(camMat,0,0,CAM_PREVIEW_W,CAM_PREVIEW_H);
             ofxCv::drawMat(roiMat,CAM_PREVIEW_W,0,ROI_PREVIEW_W,ROI_PREVIEW_H);
+            
+            ofPushStyle();
             ofNoFill();
+            ofSetColor(ofColor::orange);
             for(auto & p :srcPoints) {
+                ofSetLineWidth(3);
                 ofDrawCircle(p, 10);
+                ofSetLineWidth(1);
                 ofDrawCircle(p, 1);
             }
+            ofPopStyle();
+            
             guiLaser.draw();
+            guiIPCam.draw();
             if(firstTime) setStatus(SEGMENTATION);
         } break;
             
@@ -241,26 +218,6 @@ void ofApp::draw(){
     
     windowInfo << currentState + " | FPS: "+ofToString(ofGetFrameRate());
     ofSetWindowTitle(windowInfo.str());
-
-
-//    laserProjector.draw(x,y,w,h);
-
-    // Gui
-//    this->mouseOverGui = false;
-//    if (this->guiVisible)
-//    {
-//        this->mouseOverGui = this->imGui();
-//    }
-//    if (this->mouseOverGui)
-//    {
-////        this->camera.disableMouseInput();
-//    }
-//    else
-//    {
-////        this->camera.enableMouseInput();
-//    }
-    
-    
 }
 
 //--------------------------------------------------------------

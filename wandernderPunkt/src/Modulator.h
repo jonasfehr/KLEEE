@@ -8,8 +8,13 @@
 #ifndef Modulator_h
 #define Modulator_h
 
+#include "ofMain.h"
+#include "ofxGui.h"
+
+
 class Modulator{
 public:
+    
     ofParameter<bool> doFollowDirection{"doFollowDirection", true};
     ofParameter<float> xAmplitude{"xAmplitude", 0.0, 0.0, .1};
     ofParameter<float> xSpeed{"xSpeed", 0.00, 0.0, 1.0};

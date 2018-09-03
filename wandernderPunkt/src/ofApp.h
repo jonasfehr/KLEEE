@@ -1,17 +1,17 @@
 #pragma once
 
 #include "ofMain.h"
-//#include "ofxImGui.h"
 
-#include "Walker.h"
-#include "BlobFinder.h"
-//#include "ofxLaserProjector.h"
 #include "ofxRayComposer.h"
 #include "ofxIldaFrame.h"
 #include "ofxGui.h"
 #include "ofxIpCamStreamer.h"
-#include "Segmentator.h"
 #include "ofxOscParameterSync.h"
+
+#include "Walker.hpp"
+#include "Segmentator.hpp"
+
+
 
 class ofApp : public ofBaseApp{
 public:
@@ -51,6 +51,7 @@ public:
 //    bool mouseOverGui;
     
     ofxPanel guiLaser;
+    ofxPanel guiIPCam;
     ofxPanel guiSegmentation;
 
     
@@ -65,7 +66,7 @@ public:
 
     Walker walker;
     
-    BlobFinder blobFinder;
+//    BlobFinder blobFinder;
     
 //    ofxLaserProjector laserProjector;
     
