@@ -20,12 +20,12 @@
             "displaceAmount": "0",
             "doDisplace": "0",
             "doFade": "0",
-            "end_Blanks": "10",
-            "end_Count": "10",
+            "end_Blanks": "0",
+            "end_Count": "0",
             "fadeLength": "0",
-            "masterColor": "1, 1, 1, 1",
-            "start_Blanks": "10",
-            "start_Count": "10",
+            "masterColor": "0.002666, 0.125, 0, 1",
+            "start_Blanks": "0",
+            "start_Count": "0",
             "useColorMap": "0"
         },
         "Laser": {

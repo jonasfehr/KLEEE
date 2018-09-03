@@ -351,9 +351,11 @@ void Walker::draw(int x, int y, int w, int h){
     {
         ofTranslate(x,y);
         ofScale(w,h);
+        ofNoFill();
         ofSetColor(50);
         ofDrawRectangle(0,0,1,1);
         
+        ofFill();
         ofSetColor(ofColor::red);
         ofDrawCircle(pos, 5./w);
         //            ofDrawCircle(pos+vel*10, 5./w);

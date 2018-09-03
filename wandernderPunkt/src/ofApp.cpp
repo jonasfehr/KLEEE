@@ -6,9 +6,6 @@
 #define ROI_PREVIEW_H 600
 //--------------------------------------------------------------
 void ofApp::setup(){
-    setStatus(SELECT_ROI);
-    firstTime = false;
-
     dac.setup(true, 0, true);
     dac.setPPS(LASER_PPSx1000*1000);
     ildaFrame.setup();
@@ -38,6 +35,9 @@ void ofApp::setup(){
     
     roiMat.create(1024,1024,CV_8UC3);
     camMat = Mat::zeros(1920,1080,CV_8UC3);
+    
+    setStatus(SELECT_ROI);
+    firstTime = false;
 }
 
 void ofApp::listenerFunction(ofAbstractParameter& e){
@@ -285,6 +285,30 @@ void ofApp::keyPressed(int key){
             {
                 guiLaser.saveToFile("settingsLaser_Run.json");
                 gui.saveToFile("settingsWalker.json");
+            } break;
+                
+            default:
+                break;
+        }
+    }
+    
+    if(key=='l'&& cmdDown ){
+        switch(state){
+                
+            case SELECT_ROI:
+            {
+                guiLaser.loadFromFile("settingsLaser_SelectROI.json");
+            } break;
+                
+            case SEGMENTATION:
+            {
+                guiSegmentation.loadFromFile("settingsSegmentation.json");
+            } break;
+                
+            case RUN:
+            {
+                guiLaser.loadFromFile("settingsLaser_Run.json");
+                gui.loadFromFile("settingsWalker.json");
             } break;
                 
             default:
