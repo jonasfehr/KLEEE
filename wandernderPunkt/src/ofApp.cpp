@@ -111,7 +111,7 @@ void ofApp::update(){
         case SELECT_ROI:
         {
             camMat = ipCam.get();
-            
+                
             vector<cv::Point2f> srcPts;
             for(auto & p :srcPoints) {
                 srcPts.push_back(cv::Point2f(p.x*camMat.cols/CAM_PREVIEW_W,p.y*camMat.rows/CAM_PREVIEW_H));
