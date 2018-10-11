@@ -14,6 +14,7 @@
 
 #include "Attractor.h"
 #include "RandomWithoutRepeate.h"
+#include "WriteOnLine.h"
 
 enum MovementPatterns{
     STEERING,
@@ -39,10 +40,12 @@ public:
     ofParameter<float> maxRepulsionSpeed{"maxRepulsionSpeed", 0.001f, 0.0f, 0.01f};
     ofParameter<float> minDistancePred{"minDistancePred", 0.1f, 0.0f, 1.0f};
     ofParameter<int> length{"Length", 200, 1, 1000};
+    ofParameter<bool> doWriteText{"doWriteText", true};
+
     ofParameter<bool> doModulate{"doModulate", true};
     ofParameter<float> attractorMove{"attractorMove", 0.0001f, 0.0f, 0.001f};
     ofParameter<ofFloatColor> lineColor{ "lineColor", ofFloatColor::cyan };
-    ofParameterGroup parameters{"Walker", scaler, speed, maxForce, maxRepulsion, maxRepulsionSpeed, minDistancePred, length, doModulate,attractorMove,lineColor};
+    ofParameterGroup parameters{"Walker", scaler, speed, maxForce, maxRepulsion, maxRepulsionSpeed, minDistancePred, length,doWriteText, doModulate,attractorMove,lineColor};
     
     
     glm::vec3 pos;
@@ -96,5 +99,7 @@ public:
     ofPolyline & getPoly();
     
     void draw(int x, int y, int w, int h);
+    
+    WriteOnLine writeOnLine;
 };
 #endif /* Walker_hpp */

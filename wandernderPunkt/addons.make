@@ -5,3 +5,4 @@ ofxIpCamStreamer
 ofxOpenCvHomebrew
 ofxOsc
 ofxRayComposer
+ofxSvg

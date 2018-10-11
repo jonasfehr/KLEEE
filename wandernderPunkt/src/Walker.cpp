@@ -21,6 +21,8 @@ Walker::Walker(){
         random.add();
     }
     target=attractors[random.getNext()].getPos();
+    
+    writeOnLine.setup("text.svg", 0, 0.0004, target, pos);
 }
 
 void Walker::setBoundaryPixels(ofFloatPixels boundaryPixels){
@@ -132,6 +134,13 @@ void Walker::update(){
                 attractors[activeAttractor].deactivate();
                 
                 target=attractors[activeAttractor].getPos();
+                
+                // Write On Line
+                if(doWriteText){
+                    writeOnLine.setOrigin(pos);
+                    writeOnLine.setTarget(target);
+                    writeOnLine.nextWord();
+                }
                 
             }
             // activate all attractors exept the one which is target
@@ -298,13 +307,17 @@ void Walker::update(){
     
     //    pos = pos +
     
-    glm::vec3 linePos = glm::vec3(0.0f,0.0f,0.0f);
+    glm::vec3 linePos = pos;
     
     // ADD MODULATION
     modulator.update();
     if( doModulate ) linePos = modulator.getModualtedPos(pos, vel);
-    else linePos = pos ;
     
+    // ADD TEXT - WRITE ON LINE
+    if(doWriteText){
+        linePos = pos+writeOnLine.getOffset(pos);
+        cout << writeOnLine.getOffset(pos) << endl;
+    }
     
     // jump walls
     if(linePos.x > 1) pos.x = linePos.x-1;

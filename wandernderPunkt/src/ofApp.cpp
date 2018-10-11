@@ -63,7 +63,7 @@ void ofApp::setStatus(int newState){
             srcPoints.push_back(glm::vec2(700,700));
             srcPoints.push_back(glm::vec2(80,710));
             
-            loadRoi("settingRoi.json");
+            loadPoints("settingRoi.json", "srcPoints");
         } break;
             
         case SEGMENTATION:
@@ -98,7 +98,22 @@ void ofApp::setStatus(int newState){
             SuperPixel spSky;
             for(auto & sp: segmentator.superPixels)if(sp.isTopRow) walker.setBoundaryPixels(sp.getBoundaryPixels());
         } break;
+        
+        case CALIB_POINTS:
+        {
+            state = CALIB_POINTS;
+            currentState = "calibration points";
+            ofSetFrameRate(30);
             
+            guiLaser.loadFromFile("settingsLaser_CalibPoints.json");
+            isActivated = true;
+            
+            // Setup
+            calibPoints.clear();
+            calibPoints.push_back(glm::vec2(200,200));
+
+            loadPoints("settingCalibPoints.json", "calibPoints");
+        } break;
         default:
             break;
     }
@@ -123,7 +138,8 @@ void ofApp::update(){
             ildaFrame.update();
             if(isActivated.get()) dac.setPoints(ildaFrame);
             
-            if(!movingPoint) saveRoi("settingRoi.json");
+            if(!movingPoint) savePoints("settingRoi.json", "srcPoints");
+
             
         } break;
             
@@ -143,6 +159,36 @@ void ofApp::update(){
             
             sync.update();
 
+        } break;
+        
+        case CALIB_POINTS:
+        {
+            vector<ofPolyline> cross;
+            
+            ofPolyline line;
+            float squareSize = 0.05;
+            for(auto & calibPoint : calibPoints){
+                glm::vec2 cP_pts = glm::vec2(calibPoint.x*roiMat.cols/ROI_PREVIEW_W,calibPoint.y*roiMat.rows/ROI_PREVIEW_H);
+                
+                line.clear();
+                line.addVertex(glm::vec3(cP_pts.x-squareSize, cP_pts.y - squareSize, 0));
+                line.addVertex(glm::vec3(cP_pts.x+squareSize, cP_pts.y + squareSize, 0));
+                cross.push_back(line);
+                
+                line.clear();
+                line.addVertex(glm::vec3(cP_pts.x-squareSize, cP_pts.y + squareSize, 0));
+                line.addVertex(glm::vec3(cP_pts.x+squareSize, cP_pts.y - squareSize, 0));
+                cross.push_back(line);
+            }
+
+            
+            ildaFrame.clear();
+            ildaFrame.addPolys(cross,ofFloatColor::white);
+            ildaFrame.update();
+            if(isActivated.get()) dac.setPoints(ildaFrame);
+            
+            if(!movingPoint) savePoints("settingCalibPoints.json", "calibPoints");
+            
         } break;
             
         default:
@@ -211,6 +257,24 @@ void ofApp::draw(){
             guiLaser.draw();
             gui.draw();
         } break;
+        
+        case CALIB_POINTS:
+        {
+            ofxCv::drawMat(roiMat,0,0,ROI_PREVIEW_W,ROI_PREVIEW_H);
+            
+            ofPushStyle();
+            ofNoFill();
+            ofSetColor(ofColor::orange);
+            for(auto & p :calibPoints) {
+                ofSetLineWidth(3);
+                ofDrawCircle(p, 10);
+                ofSetLineWidth(1);
+                ofDrawCircle(p, 1);
+            }
+            ofPopStyle();
+            
+            guiLaser.draw();
+        } break;
             
         default:
             break;
@@ -268,6 +332,10 @@ void ofApp::keyPressed(int key){
         }
     }
     
+    if(key=='c'){
+        setStatus(CALIB_POINTS);
+    }
+    
     if(key=='s'&& cmdDown ){
         switch(state){
                 
@@ -285,6 +353,11 @@ void ofApp::keyPressed(int key){
             {
                 guiLaser.saveToFile("settingsLaser_Run.json");
                 gui.saveToFile("settingsWalker.json");
+            } break;
+            
+            case CALIB_POINTS:
+            {
+                guiLaser.saveToFile("settingsLaser_CalibPoints.json");
             } break;
                 
             default:
@@ -309,6 +382,11 @@ void ofApp::keyPressed(int key){
             {
                 guiLaser.loadFromFile("settingsLaser_Run.json");
                 gui.loadFromFile("settingsWalker.json");
+            } break;
+            
+            case CALIB_POINTS:
+            {
+                guiLaser.loadFromFile("settingsLaser_CalibPoints.json");
             } break;
                 
             default:
@@ -335,7 +413,7 @@ void ofApp::mouseMoved(int x, int y ){
 //--------------------------------------------------------------
 
 void ofApp::mouseDragged(int x, int y, int button){
-    if(state==SELECT_ROI){
+    if(state==SELECT_ROI || state==CALIB_POINTS){
         if(movingPoint) {
             curPoint->x = x;
             curPoint->y = y;
@@ -347,6 +425,14 @@ void ofApp::mouseDragged(int x, int y, int button){
 void ofApp::mousePressed(int x, int y, int button){
     if(state==SELECT_ROI){
         for(auto & p : srcPoints){
+            if(glm::distance(p,glm::vec2(x,y))<20){
+                curPoint = &p;
+                movingPoint = true;
+            }
+        }
+    }
+    else if(state==CALIB_POINTS){
+        for(auto & p : calibPoints){
             if(glm::distance(p,glm::vec2(x,y))<20){
                 curPoint = &p;
                 movingPoint = true;
@@ -385,19 +471,19 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 }
 //--------------------------------------------------------------
-void ofApp::saveRoi(string filename){
+void ofApp::savePoints(string filename, string pointName){
     ofJson json;// = ofLoadJson(filename);
     for(int i = 0; i<srcPoints.size(); i++){
-        json["srcPoints"][ofToString(i)] = vec2ToJson(srcPoints[i]);
+        json[pointName][ofToString(i)] = vec2ToJson(srcPoints[i]);
     }
     
     ofSavePrettyJson(filename, json);
 }
 
-void ofApp::loadRoi(string filename){
+void ofApp::loadPoints(string filename, string pointName){
 ofFile jsonFile(filename);
 ofJson json = ofLoadJson(jsonFile);
-    if(!json["srcPoints"].is_null()) srcPoints.clear();
+    if(!json[pointName].is_null()) srcPoints.clear();
     for(auto & jPoint : json["srcPoints"]){
         srcPoints.push_back(jsonToVec2(jPoint));
     }

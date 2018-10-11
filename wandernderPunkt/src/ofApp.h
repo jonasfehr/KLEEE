@@ -19,7 +19,8 @@ public:
     enum Status{
         SELECT_ROI,
         SEGMENTATION,
-        RUN
+        RUN,
+        CALIB_POINTS
     } state;
     
     string currentState;
@@ -76,15 +77,16 @@ public:
     ofxIpCamStreamer ipCam;
     Mat camMat;
     Mat roiMat;
-    void saveRoi(string filename);
-    void loadRoi(string filename);
+    void savePoints(string filename, string pointName);
+    void loadPoints(string filename, string pointName);
     ofJson vec3ToJson(glm::vec3 vec);
     glm::vec3 jsonToVec3(ofJson json);
     ofJson vec2ToJson(glm::vec2 vec);
     glm::vec2 jsonToVec2(ofJson json);
     
     vector<glm::vec2> srcPoints;
-    
+    vector<glm::vec2> calibPoints;
+
     // variables for dragging points
     bool movingPoint;
     glm::vec2* curPoint;
