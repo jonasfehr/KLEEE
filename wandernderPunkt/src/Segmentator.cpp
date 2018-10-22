@@ -28,8 +28,36 @@ void Segmentator::filters(Mat & src, Mat & dst){
 void Segmentator::draw(){
     ofxCv::drawMat(result,0,0,512,512);
     ofxCv::drawMat(coloredSP,512,0,512,512);
-    ofxCv::drawMat(final,1024,0,512,512);
+    
+//    final = result;
+//    cv::Mat masked;
+//    masked.zeros(1024, 1024, 3);
+    result.copyTo(final);
+    for(auto & sp : superPixels){
+        if(sp.segment == 0){
+            Vec3b segCol = Vec3b(255,255,255);
+            cv::Mat dst(final.size(),final.type(),segCol);
+            dst.copyTo(final, sp.mask);
+        }
+        else if(sp.segment != -1){
+            ofColor color;
+            color.setHsb(sp.segment/10.*255, 255, 255);
+            Vec3b segCol = Vec3b(color.r,color.g,color.b);
+            cv::Mat dst(final.size(),final.type(),segCol);
+            dst.copyTo(final, sp.mask);
+        }
+    }
+    
+    ofxCv::drawMat(final,0,0,512,512);
+
 }
+
+//void Segmentator::drawSelection(){
+//    ofxCv::drawMat(result,0,0,512,512);
+//    ofxCv::drawMat(coloredSP,512,0,512,512);
+//    ofxCv::drawMat(final,1024,0,512,512);
+//
+//}
 
 
 void Segmentator::slic(cv::Mat inputMat){
@@ -62,7 +90,6 @@ void Segmentator::slic(cv::Mat inputMat){
         Mat labels;
         slic->getLabels(labels);
         
-        vector<SuperPixel> superPixels;
         
         // for histogram
         Mat frameHSV;
@@ -129,7 +156,8 @@ void Segmentator::slic(cv::Mat inputMat){
             newSP.mask = mask;
             hist.copyTo(newSP.hist);
             newSP.centroids.push_back(centroid);
-            newSP.isTopRow = isTopRow;
+//            if(isTopRow) newSP.segment = 1;
+//            else newSP.segment = -1;
             superPixels.push_back(newSP);
             
             
@@ -143,53 +171,53 @@ void Segmentator::slic(cv::Mat inputMat){
             
         }
         
-        for( auto i = superPixels.begin(); i != superPixels.end(); )
-        {
-            for( auto i2 = i+1; i2 != superPixels.end(); )
-            {
-                //                    if(sp1.label == sp2.label) continue;
-                /*
-                 compare methods
-                 CV_COMP_CORREL Correlation
-                 CV_COMP_CHISQR Chi-Square
-                 CV_COMP_INTERSECT Intersection
-                 CV_COMP_BHATTACHARYYA Bhattacharyya distance
-                 CV_COMP_HELLINGER Synonym for CV_COMP_BHATTACHARYYA
-                 */
-                
-                double histCompaire = compareHist(i->hist, i2->hist,CV_COMP_CORREL);
-                
-                float minDistance = 1024;
-                for(auto & c : i2->centroids){
-                    float dist = i->getMinDist(c);
-                    if(dist < minDistance) minDistance = dist;
-                }
-                if( histCompaire > combine_treshold  && minDistance<maxDistance){
-                    //                    cout << i->label<< "/" << i2->label<<" "<<histCompaire << endl;
-                    //                    if((abs(i->meanColor[0]-i2->meanColor[0])<(1.-combine_treshold)*255)  && glm::distance(i->centroid, i2->centroid)<maxDistance){
-                    bitwise_or(i->mask, i2->mask, i->mask);
-                    i->meanColor = (i->meanColor+i2->meanColor)/2;
-                    
-                    calcHist( &frameHSV, 1, channels, i->mask, i->hist, 2, histSize, ranges, true, false );
-                    
-                    for(auto & c : i2->centroids) i->centroids.push_back(c);
-                    
-                    
-                    i2 = superPixels.erase(i2);
-                }
-                else ++i2;
-            }
-            ++i;
-        }
-        
-        
-        for(auto & sp: superPixels){
-            // create dst with background color of your choice
-            cv::Mat dst(frame.size(),frame.type(),sp.meanColor);
-            
-            // now copy
-            dst.copyTo(final, sp.mask);
-        }
+//        for( auto i = superPixels.begin(); i != superPixels.end(); )
+//        {
+//            for( auto i2 = i+1; i2 != superPixels.end(); )
+//            {
+//                //                    if(sp1.label == sp2.label) continue;
+//                /*
+//                 compare methods
+//                 CV_COMP_CORREL Correlation
+//                 CV_COMP_CHISQR Chi-Square
+//                 CV_COMP_INTERSECT Intersection
+//                 CV_COMP_BHATTACHARYYA Bhattacharyya distance
+//                 CV_COMP_HELLINGER Synonym for CV_COMP_BHATTACHARYYA
+//                 */
+//
+//                double histCompaire = compareHist(i->hist, i2->hist,CV_COMP_CORREL);
+//
+//                float minDistance = 1024;
+//                for(auto & c : i2->centroids){
+//                    float dist = i->getMinDist(c);
+//                    if(dist < minDistance) minDistance = dist;
+//                }
+//                if( histCompaire > combine_treshold  && minDistance<maxDistance){
+//                    //                    cout << i->label<< "/" << i2->label<<" "<<histCompaire << endl;
+//                    //                    if((abs(i->meanColor[0]-i2->meanColor[0])<(1.-combine_treshold)*255)  && glm::distance(i->centroid, i2->centroid)<maxDistance){
+//                    bitwise_or(i->mask, i2->mask, i->mask);
+//                    i->meanColor = (i->meanColor+i2->meanColor)/2;
+//
+//                    calcHist( &frameHSV, 1, channels, i->mask, i->hist, 2, histSize, ranges, true, false );
+//
+//                    for(auto & c : i2->centroids) i->centroids.push_back(c);
+//
+//
+//                    i2 = superPixels.erase(i2);
+//                }
+//                else ++i2;
+//            }
+//            ++i;
+//        }
+//
+//
+//        for(auto & sp: superPixels){
+//            // create dst with background color of your choice
+//            cv::Mat dst(frame.size(),frame.type(),sp.meanColor);
+//
+//            // now copy
+//            dst.copyTo(final, sp.mask);
+//        }
         
         doUpdate = false;
     }
@@ -280,7 +308,8 @@ void Segmentator::slicGray(cv::Mat inputMat){
             newSP.mask = mask;
             hist.copyTo(newSP.hist);
             newSP.centroids.push_back(centroid);
-            newSP.isTopRow = isTopRow;
+            if(isTopRow) newSP.segment = 1;
+            else newSP.segment = -1;
             superPixels.push_back(newSP);
             
             
@@ -294,95 +323,178 @@ void Segmentator::slicGray(cv::Mat inputMat){
             
         }
         
-        for(int j = 0; j<5; j++){
-            
-            for( auto i = superPixels.begin(); i != superPixels.end(); )
-            {
-                for( auto i2 = i+1; i2 != superPixels.end(); )
-                {
-                    //                    if(sp1.label == sp2.label) continue;
-                    /*
-                     compare methods
-                     CV_COMP_CORREL Correlation
-                     CV_COMP_CHISQR Chi-Square
-                     CV_COMP_INTERSECT Intersection
-                     CV_COMP_BHATTACHARYYA Bhattacharyya distance
-                     CV_COMP_HELLINGER Synonym for CV_COMP_BHATTACHARYYA
-                     */
-                    
-                    double histCompaire = compareHist(i->hist, i2->hist,CV_COMP_CORREL);
-                    
-                    float minDistance = 1024;
-                    for(auto & c : i2->centroids){
-                        float dist = i->getMinDist(c);
-                        if(dist < minDistance) minDistance = dist;
-                    }
-                    if( histCompaire > combine_treshold  && minDistance<maxDistance){
-                        
-                        
-                        //                    if((abs(i->meanColor[0]-i2->meanColor[0])<(combine_treshold)*255 && glm::distance(i->centroid, i2->centroid)<maxDistance) ){
-                        bitwise_or(i->mask, i2->mask, i->mask);
-                        
-                        int value = (i->meanColor.val[0]+i2->meanColor.val[0])/2;
-                        
-                        i->meanColor.val[0] = value;
-                        i->meanColor.val[1] = value;
-                        i->meanColor.val[2] = value;
-                        for(auto & c : i2->centroids) i->centroids.push_back(c);
-                        
-                        
-                        calcHist( &frame, 1, channels, i->mask, i->hist, 1, histSize, ranges, true, false );
-                        
-                        i2 = superPixels.erase(i2);
-                    }
-                    else ++i2;
-                }
-                ++i;
-            }
-        }
-        for( auto i = superPixels.begin(); i != superPixels.end(); )
-        {
-            for( auto i2 = i+1; i2 != superPixels.end(); )
-            {
-                
-                if(i->isTopRow && i2->isTopRow){
-                    bitwise_or(i->mask, i2->mask, i->mask);
-                    
-                    int value = (i->meanColor.val[0]+i2->meanColor.val[0])/2;
-                    
-                    i->meanColor.val[0] = value;
-                    i->meanColor.val[1] = value;
-                    i->meanColor.val[2] = value;
-                    
-                    for(auto & c : i2->centroids) i->centroids.push_back(c);
-                    
-                    
-                    calcHist( &frame, 1, channels, i->mask, i->hist, 1, histSize, ranges, true, false );
-                    
-                    i2 = superPixels.erase(i2);
-                }
-                else ++i2;
-            }
-            ++i;
-        }
-        
-        
-        for(auto & sp: superPixels){
-            if(sp.isTopRow){
-                Mat invMask;
-                invert(sp.mask, invMask);
-                sp.contour.findContours(invMask);
-            }
-            else sp.contour.findContours(sp.mask);
-            
-            // create dst with background color of your choice
-            cv::Mat dst(frame.size(),frame.type(),sp.meanColor);
-            
-            // now copy
-            dst.copyTo(final, sp.mask);
-        }
-        
+//        for(int j = 0; j<5; j++){
+//
+//            for( auto i = superPixels.begin(); i != superPixels.end(); )
+//            {
+//                for( auto i2 = i+1; i2 != superPixels.end(); )
+//                {
+//                    //                    if(sp1.label == sp2.label) continue;
+//                    /*
+//                     compare methods
+//                     CV_COMP_CORREL Correlation
+//                     CV_COMP_CHISQR Chi-Square
+//                     CV_COMP_INTERSECT Intersection
+//                     CV_COMP_BHATTACHARYYA Bhattacharyya distance
+//                     CV_COMP_HELLINGER Synonym for CV_COMP_BHATTACHARYYA
+//                     */
+//
+//                    double histCompaire = compareHist(i->hist, i2->hist,CV_COMP_CORREL);
+//
+//                    float minDistance = 1024;
+//                    for(auto & c : i2->centroids){
+//                        float dist = i->getMinDist(c);
+//                        if(dist < minDistance) minDistance = dist;
+//                    }
+//                    if( histCompaire > combine_treshold  && minDistance<maxDistance){
+//
+//
+//                        //                    if((abs(i->meanColor[0]-i2->meanColor[0])<(combine_treshold)*255 && glm::distance(i->centroid, i2->centroid)<maxDistance) ){
+//                        bitwise_or(i->mask, i2->mask, i->mask);
+//
+//                        int value = (i->meanColor.val[0]+i2->meanColor.val[0])/2;
+//
+//                        i->meanColor.val[0] = value;
+//                        i->meanColor.val[1] = value;
+//                        i->meanColor.val[2] = value;
+//                        for(auto & c : i2->centroids) i->centroids.push_back(c);
+//
+//
+//                        calcHist( &frame, 1, channels, i->mask, i->hist, 1, histSize, ranges, true, false );
+//
+//                        i2 = superPixels.erase(i2);
+//                    }
+//                    else ++i2;
+//                }
+//                ++i;
+//            }
+//        }
+//        for( auto i = superPixels.begin(); i != superPixels.end(); )
+//        {
+//            for( auto i2 = i+1; i2 != superPixels.end(); )
+//            {
+//
+//                if(i->isTopRow && i2->isTopRow){
+//                    bitwise_or(i->mask, i2->mask, i->mask);
+//
+//                    int value = (i->meanColor.val[0]+i2->meanColor.val[0])/2;
+//
+//                    i->meanColor.val[0] = value;
+//                    i->meanColor.val[1] = value;
+//                    i->meanColor.val[2] = value;
+//
+//                    for(auto & c : i2->centroids) i->centroids.push_back(c);
+//
+//
+//                    calcHist( &frame, 1, channels, i->mask, i->hist, 1, histSize, ranges, true, false );
+//
+//                    i2 = superPixels.erase(i2);
+//                }
+//                else ++i2;
+//            }
+//            ++i;
+//        }
+//
+//
+//        for(auto & sp: superPixels){
+//            if(sp.isTopRow){
+//                Mat invMask;
+//                invert(sp.mask, invMask);
+//                sp.contour.findContours(invMask);
+//            }
+//            else sp.contour.findContours(sp.mask);
+//
+//            // create dst with background color of your choice
+//            cv::Mat dst(frame.size(),frame.type(),sp.meanColor);
+//
+//            // now copy
+//            dst.copyTo(final, sp.mask);
+//        }
+//
         doUpdate = false;
     }
     
+}
+
+void Segmentator::manualSelect(){
+    if(ofGetMousePressed()){
+        int r = int(ofGetMouseY()*2);
+        int c = int(ofGetMouseX()*0.666666);
+//        cout << r << "/" << c << endl;
+        
+        for(auto & sp:superPixels){
+
+//            cout << sp.mask.rows << "/" << sp.mask.cols << endl;
+
+            if( r<1024 && c<1024 && r>=0 && c>=0){
+            Vec3b col = sp.mask.at<Vec3b>(cv::Point(c,r));
+                if(col.val[0] > 0 && col.val[1] > 0 && col.val[2] > 0){
+                    if(ofGetKeyPressed('0')){
+                        sp.segment = -1;
+                    }
+                    if(ofGetKeyPressed('m')){
+                        sp.segment = 0;
+                    }
+                    if(ofGetKeyPressed('1')){
+                        sp.segment = 1;
+                    }
+                    if(ofGetKeyPressed('2')){
+                        sp.segment = 2;
+                    }
+                    if(ofGetKeyPressed('3')){
+                        sp.segment = 3;
+                    }
+                    if(ofGetKeyPressed('4')){
+                        sp.segment = 4;
+                    }
+                    if(ofGetKeyPressed('5')){
+                        sp.segment = 5;
+                    }
+                    if(ofGetKeyPressed('6')){
+                        sp.segment = 6;
+                    }
+                    if(ofGetKeyPressed('7')){
+                        sp.segment = 7;
+                    }
+                    if(ofGetKeyPressed('8')){
+                        sp.segment = 8;
+                    }
+                    if(ofGetKeyPressed('9')){
+                        sp.segment = 9;
+                    }
+                }
+            }
+        }
     }
+}
+
+void Segmentator::groupSegmentSuperPixels(){
+    for( auto i = superPixels.begin(); i != superPixels.end(); )
+    {
+        for( auto i2 = i+1; i2 != superPixels.end(); )
+        {
+            
+            if(i->segment == 1 && i2->segment == 1){
+                bitwise_or(i->mask, i2->mask, i->mask);
+                                
+                
+                for(auto & c : i2->centroids) i->centroids.push_back(c);
+                
+                
+                i2 = superPixels.erase(i2);
+            }
+            else ++i2;
+        }
+        ++i;
+    }
+//    
+//    
+//    for(auto & sp: superPixels){
+//        if(sp.isTopRow){
+//            Mat invMask;
+//            invert(sp.mask, invMask);
+//            sp.contour.findContours(invMask);
+//        }
+//        else sp.contour.findContours(sp.mask);
+//    }
+}

@@ -25,6 +25,10 @@ public:
     void filters(cv::Mat & src, cv::Mat & dst);
     void draw();
     
+    void manualSelect();
+    void drawSelection();
+    void groupSegmentSuperPixels();
+    
     vector<SuperPixel> superPixels;
     
     cv::Mat result, coloredSP, final;
@@ -45,6 +49,7 @@ public:
     
     
     ofParameter<int> algorithm{"Algorithm", 0, 0, 2};
+    ofParameter<bool> doGray{"doGray", true};
     ofParameter<int> region_size{"Region size", 50, 1, 200};
     ofParameter<int> ruler{"Ruler", 30, 1, 100};
     ofParameter<int> min_element_size{"min element size", 50, 1, 100};

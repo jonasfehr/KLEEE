@@ -11,7 +11,9 @@ void ofApp::setup(){
     ildaFrame.setup();
     
     // Guis
+    state.set("state", SUPERPIXELS, SELECT_ROI,CALIB_POINTS);
     gui.setup();
+    gui.add(state);
     gui.add(walker.parameters);
     gui.setPosition(220,10);
     sync.setup((ofParameterGroup&)gui.getParameter(),8888,"localhost",8889);
@@ -36,7 +38,10 @@ void ofApp::setup(){
     roiMat.create(1024,1024,CV_8UC3);
     camMat = Mat::zeros(1920,1080,CV_8UC3);
     
-    setStatus(SELECT_ROI);
+    state.addListener(this, &ofApp::setStatus);
+    int newState = SUPERPIXELS;
+    setStatus(newState);
+
     firstTime = false;
 }
 
@@ -44,7 +49,10 @@ void ofApp::listenerFunction(ofAbstractParameter& e){
     dac.setPPS(LASER_PPSx1000*1000);
 }
 
-void ofApp::setStatus(int newState){
+void ofApp::setStatus(int & newState){
+    
+    
+    
     switch(newState){
             
         case SELECT_ROI:
@@ -63,14 +71,50 @@ void ofApp::setStatus(int newState){
             srcPoints.push_back(glm::vec2(700,700));
             srcPoints.push_back(glm::vec2(80,710));
             
-            loadPoints("settingRoi.json", "srcPoints");
+            loadPoints("settingRoi.json", "srcPoints", srcPoints);
+        } break;
+            
+        case SUPERPIXELS:
+        {
+            if(state == SELECT_ROI){
+                // save images if previous SEL_ROI
+                ofImage ofImg;
+                toOf(camMat, ofImg);
+                ofImg.save("captures/inputImages/"+ofGetTimestampString("%y%m%d_%H-%M-%S")+"_inputImage.jpg", OF_IMAGE_QUALITY_BEST);
+                
+                toOf(roiMat, ofImg);
+                ofImg.save("captures/roi/"+ofGetTimestampString("%y%m%d_%H-%M-%S")+"_roi.jpg", OF_IMAGE_QUALITY_BEST);
+            }
+            
+            state = SUPERPIXELS;
+            currentState = "Superpixels";
+            ofSetFrameRate(30);
+
+            // load images
+            ofDirectory dir;
+            dir.open("captures/roi");
+            dir.listDir();
+            dir.sortByDate();
+            string filename = dir.getPath(dir.size()-1);
+
+            ofImage loadImg;
+            loadImg.load(filename);
+//            loadImg.load("captures/roi/test_col.jpg");
+            roiMat = toCv(loadImg).clone();
+
+            guiSegmentation.loadFromFile("settingsSuperpixels.json");
+            
+            segmentator.doUpdate = true;
+            
+            
+           
         } break;
             
         case SEGMENTATION:
         {
             state = SEGMENTATION;
             currentState = "Segmentation";
-            ofSetFrameRate(30);
+            ofSetFrameRate(60);
             
             guiSegmentation.loadFromFile("settingsSegmentation.json");
             
@@ -95,8 +139,8 @@ void ofApp::setStatus(int newState){
             guiLaser.loadFromFile("settingsLaser_Run.json");
             gui.loadFromFile("settingsWalker.json");
             
-            SuperPixel spSky;
-            for(auto & sp: segmentator.superPixels)if(sp.isTopRow) walker.setBoundaryPixels(sp.getBoundaryPixels());
+            segmentator.groupSegmentSuperPixels();
+            for(auto & sp: segmentator.superPixels)if(sp.segment==1) walker.setBoundaryPixels(sp.getBoundaryPixels());
         } break;
         
         case CALIB_POINTS:
@@ -112,7 +156,7 @@ void ofApp::setStatus(int newState){
             calibPoints.clear();
             calibPoints.push_back(glm::vec2(200,200));
 
-            loadPoints("settingCalibPoints.json", "calibPoints");
+            loadPoints("settingCalibPoints.json", "calibPoints", calibPoints);
         } break;
         default:
             break;
@@ -138,9 +182,15 @@ void ofApp::update(){
             ildaFrame.update();
             if(isActivated.get()) dac.setPoints(ildaFrame);
             
-            if(!movingPoint) savePoints("settingRoi.json", "srcPoints");
+            if(!movingPoint) savePoints("settingRoi.json", "srcPoints", srcPoints);
 
             
+        } break;
+            
+        case SUPERPIXELS:
+        {
+            segmentator.slic(roiMat);
+            segmentator.manualSelect();
         } break;
             
         case SEGMENTATION:
@@ -157,7 +207,6 @@ void ofApp::update(){
             // send points to the DAC
             if(isActivated.get()) dac.setPoints(ildaFrame);
             
-            sync.update();
 
         } break;
         
@@ -168,7 +217,7 @@ void ofApp::update(){
             ofPolyline line;
             float squareSize = 0.05;
             for(auto & calibPoint : calibPoints){
-                glm::vec2 cP_pts = glm::vec2(calibPoint.x*roiMat.cols/ROI_PREVIEW_W,calibPoint.y*roiMat.rows/ROI_PREVIEW_H);
+                glm::vec2 cP_pts = glm::vec2(calibPoint.x/ROI_PREVIEW_W,calibPoint.y/ROI_PREVIEW_H);
                 
                 line.clear();
                 line.addVertex(glm::vec3(cP_pts.x-squareSize, cP_pts.y - squareSize, 0));
@@ -187,7 +236,7 @@ void ofApp::update(){
             ildaFrame.update();
             if(isActivated.get()) dac.setPoints(ildaFrame);
             
-            if(!movingPoint) savePoints("settingCalibPoints.json", "calibPoints");
+            if(!movingPoint) savePoints("settingCalibPoints.json", "calibPoints", calibPoints);
             
         } break;
             
@@ -195,7 +244,16 @@ void ofApp::update(){
             break;
     }
     
+    sync.update();
+
     
+    // SEND WATCHDOG
+    if(ofGetFrameNum()%60==0){
+        ofxOscMessage m;
+        m.setAddress("/watchdog");
+        m.addIntArg(1);
+        sync.sender.sendMessage(m, false);
+    }
     
     
    
@@ -227,14 +285,21 @@ void ofApp::draw(){
             
             guiLaser.draw();
             guiIPCam.draw();
-            if(firstTime) setStatus(SEGMENTATION);
+            if(firstTime) state = SEGMENTATION;
+        } break;
+            
+        case SUPERPIXELS:
+        {
+            segmentator.draw();
+            guiSegmentation.draw();
+            if(firstTime) state = (RUN);
         } break;
             
         case SEGMENTATION:
         {
             segmentator.draw();
             guiSegmentation.draw();
-            if(firstTime) setStatus(RUN);
+            if(firstTime) state = (RUN);
         } break;
             
         case RUN:
@@ -251,7 +316,7 @@ void ofApp::draw(){
             ofTranslate(x,y);
             ofScale(roiMat.rows/w, roiMat.cols/h);
             for(auto & sp : segmentator.superPixels){
-                if(sp.isTopRow) sp.contour.draw();
+                if(sp.segment==1) sp.contour.draw();
             }
             ofPopMatrix();
             guiLaser.draw();
@@ -314,17 +379,27 @@ void ofApp::keyPressed(int key){
                 
             case SELECT_ROI:
             {
-                setStatus(SEGMENTATION);
+                state = (SEGMENTATION);
+            } break;
+                
+            case SUPERPIXELS:
+            {
+                state = (RUN);
             } break;
                 
             case SEGMENTATION:
             {
-                setStatus(RUN);
+                state = (RUN);
             } break;
                 
             case RUN:
             {
-                setStatus(SELECT_ROI);
+                state = (SELECT_ROI);
+            } break;
+                
+            case CALIB_POINTS:
+            {
+                state = (RUN);
             } break;
                 
             default:
@@ -333,7 +408,7 @@ void ofApp::keyPressed(int key){
     }
     
     if(key=='c'){
-        setStatus(CALIB_POINTS);
+        state = (CALIB_POINTS);
     }
     
     if(key=='s'&& cmdDown ){
@@ -471,21 +546,21 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 }
 //--------------------------------------------------------------
-void ofApp::savePoints(string filename, string pointName){
+void ofApp::savePoints(string filename, string pointName, vector<glm::vec2> & points){
     ofJson json;// = ofLoadJson(filename);
-    for(int i = 0; i<srcPoints.size(); i++){
-        json[pointName][ofToString(i)] = vec2ToJson(srcPoints[i]);
+    for(int i = 0; i<points.size(); i++){
+        json[pointName][ofToString(i)] = vec2ToJson(points[i]);
     }
     
     ofSavePrettyJson(filename, json);
 }
 
-void ofApp::loadPoints(string filename, string pointName){
+void ofApp::loadPoints(string filename, string pointName, vector<glm::vec2> & points){
 ofFile jsonFile(filename);
 ofJson json = ofLoadJson(jsonFile);
-    if(!json[pointName].is_null()) srcPoints.clear();
-    for(auto & jPoint : json["srcPoints"]){
-        srcPoints.push_back(jsonToVec2(jPoint));
+    if(!json[pointName].is_null()) points.clear();
+    for(auto & jPoint : json[pointName]){
+        points.push_back(jsonToVec2(jPoint));
     }
 }
 

@@ -12,22 +12,25 @@
 #include "Segmentator.hpp"
 
 
-
 class ofApp : public ofBaseApp{
 public:
     
     enum Status{
+        UNDEFINED,
+
         SELECT_ROI,
+        SUPERPIXELS,
         SEGMENTATION,
         RUN,
         CALIB_POINTS
-    } state;
+        
+    };// state;
     
     string currentState;
 
     
 		void setup();
-        void setStatus(int state);
+        void setStatus(int & state);
 		void update();
 		void draw();
         void exit();
@@ -77,8 +80,8 @@ public:
     ofxIpCamStreamer ipCam;
     Mat camMat;
     Mat roiMat;
-    void savePoints(string filename, string pointName);
-    void loadPoints(string filename, string pointName);
+    void savePoints(string filename, string pointName, vector<glm::vec2> & points);
+    void loadPoints(string filename, string pointName, vector<glm::vec2> & points);
     ofJson vec3ToJson(glm::vec3 vec);
     glm::vec3 jsonToVec3(ofJson json);
     ofJson vec2ToJson(glm::vec2 vec);
@@ -130,5 +133,6 @@ public:
     }
     
     ofxOscParameterSync sync;
+    ofParameter<int> state;
 
 };

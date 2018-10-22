@@ -5,32 +5,34 @@
             "Do_Cap_Y": "0",
             "Do_Flip_X": "0",
             "Do_Flip_Y": "0",
-            "Draw_Lines": "1",
+            "Draw_Lines": "0",
             "Draw_Point_nums": "0",
-            "Draw_Points": "1",
+            "Draw_Points": "0",
             "Draw_finalPoints": "0",
             "Offset": "0, 0",
             "PolyProcessor": {
                 "optimizeTolerance": "0",
                 "smoothAmount": "0",
-                "spacing": "0.007984",
-                "targetPointCount": "500"
+                "spacing": "0.000717875",
+                "targetPointCount": "394"
             },
             "Scale": "0, 0",
             "displaceAmount": "0",
+            "displaceAmountHorizontal": "0",
+            "displaceAmountVertical": "0",
             "doDisplace": "0",
             "doFade": "0",
             "end_Blanks": "0",
             "end_Count": "0",
             "fadeLength": "0",
-            "masterColor": "0.002666, 0.125, 0, 1",
-            "start_Blanks": "0",
+            "masterColor": "0.00207355, 0.0972222, 0, 1",
+            "start_Blanks": "10",
             "start_Count": "0",
             "useColorMap": "0"
         },
         "Laser": {
             "LASER_PPSx1000": "30",
-            "isActivated": "0"
+            "isActivated": "1"
         }
     }
 }

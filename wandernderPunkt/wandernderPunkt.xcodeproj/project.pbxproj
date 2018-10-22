@@ -704,20 +704,20 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FE2C1D2DEB243768E6FED7DF /* librcdev.1.6.0.dylib */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
+				C138872A3BE32C1FDC57667C /* SuperPixel.hpp */,
 				671341A4B2C7E9DE9258A94C /* SuperPixel.cpp */,
 				B040505074223AD60C7736DD /* Segmentator.hpp */,
-				FE2C1D2DEB243768E6FED7DF /* librcdev.1.6.0.dylib */,
+				C84E47ADE9FA9901879534EB /* Segmentator.cpp */,
 				27782D513F8EF673DBC77D4C /* Attractor.h */,
 				74981BC70E37AA6C7B52CA6B /* Unused */,
 				CF03562D45BBEBF11759D2AF /* Walker.hpp */,
 				6E040A9FCF133056D1DBAF72 /* Walker.cpp */,
 				4EDCFB8543A87C4A6CFFC50A /* WriteOnLine.h */,
-				C138872A3BE32C1FDC57667C /* SuperPixel.hpp */,
 				1A2134B115D4BD3A6231A85E /* Modulator.h */,
-				C84E47ADE9FA9901879534EB /* Segmentator.cpp */,
 				15BC26A84DF6581192100F22 /* RandomWithoutRepeate.h */,
 			);
 			path = src;

@@ -19,8 +19,9 @@ public:
     cv::Mat mask;
     cv::MatND hist;
     vector<glm::vec2> centroids;
-    bool isTopRow;
     ofxCv::ContourFinder contour;
+    
+    int segment=-1;
 
     
     float getMinDist(glm::vec2 centroid);
