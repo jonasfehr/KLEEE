@@ -37,7 +37,11 @@ public:
     
     void nextWord(){
         currentIndex = (currentIndex+1)%outlines.size();
+        cout << currentIndex<< endl;
+
         select(currentIndex);
+        cout << currentIndex<< endl;
+        cout << endl;
     }
     
     
@@ -70,6 +74,9 @@ public:
         amtWord = drawWidth/distancePoints;
         amtStartWord = (1.-amtWord)/2.0;
         
+        float distanceOT = glm::distance(origin, target); // avoid writ
+        if(distanceOT<amtWord) currentIndex = (currentIndex -1)%outlines.size();
+        
         return true;
     }
     
@@ -91,18 +98,16 @@ public:
     }
     
     glm::vec3 getOffset(glm::vec3 pos){
-        float step = glm::distance(origin, pos)/glm::distance(origin, target);
+        float distanceOT = glm::distance(origin, target);
+        if(distanceOT<amtWord) return glm::vec3(0.0);
+        float step = glm::distance(origin, pos)/distanceOT;
         return getPoint(step)-(glm::normalize(target-origin) * step * distancePoints +origin);
     }
     
     
     
     
-    ofxSVG svg;
-    vector<ofPolyline> outlines;
-    ofPolyline word;
-    glm::vec3 origin;
-    glm::vec3 target;
+
     void setTarget(glm::vec3 target){
 //        this->origin = this->target;
         this->target = target;
@@ -118,12 +123,21 @@ public:
         select(currentIndex);
     };
     
+    void setCurrentIndex(int index){
+        this->currentIndex = index;
+    };
+    
 private:
     glm::mat4  transform;
     float amtWord;
     float amtStartWord;
     float distancePoints;
     int currentIndex;
+    ofxSVG svg;
+    vector<ofPolyline> outlines;
+    ofPolyline word;
+    glm::vec3 origin;
+    glm::vec3 target;
 };
 
 #endif /* WriteOnLine_h */

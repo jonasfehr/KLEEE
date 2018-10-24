@@ -16,17 +16,16 @@ class ofApp : public ofBaseApp{
 public:
     
     enum Status{
-        UNDEFINED,
+        UNDEFINED = 0,
 
-        SELECT_ROI,
-        SUPERPIXELS,
-        SEGMENTATION,
-        RUN,
-        CALIB_POINTS
+        SELECT_ROI = 1,
+        SUPERPIXELS = 2,
+        RUN = 3,
+        CALIB_POINTS = 4
         
     };// state;
     
-    string currentState;
+    string currentStateStr;
 
     
 		void setup();
@@ -47,12 +46,6 @@ public:
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    bool firstTime;
-    // Gui
-//    bool imGui();
-//    ofxImGui::Gui gui;
-//    bool guiVisible;
-//    bool mouseOverGui;
     
     ofxPanel guiLaser;
     ofxPanel guiIPCam;
@@ -134,5 +127,6 @@ public:
     
     ofxOscParameterSync sync;
     ofParameter<int> state;
+    int currentState;
 
 };

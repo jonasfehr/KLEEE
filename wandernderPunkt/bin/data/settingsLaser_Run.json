@@ -13,11 +13,13 @@
             "PolyProcessor": {
                 "optimizeTolerance": "0",
                 "smoothAmount": "0",
-                "spacing": "0.00533165",
+                "spacing": "0.00105029",
                 "targetPointCount": "498"
             },
             "Scale": "0, 0",
             "displaceAmount": "0",
+            "displaceAmountHorizontal": "0",
+            "displaceAmountVertical": "0",
             "doDisplace": "0",
             "doFade": "1",
             "end_Blanks": "0",

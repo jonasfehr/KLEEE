@@ -11,7 +11,7 @@ void ofApp::setup(){
     ildaFrame.setup();
     
     // Guis
-    state.set("state", SUPERPIXELS, SELECT_ROI,CALIB_POINTS);
+    state.set("state", UNDEFINED, SELECT_ROI, CALIB_POINTS);
     gui.setup();
     gui.add(state);
     gui.add(walker.parameters);
@@ -39,10 +39,9 @@ void ofApp::setup(){
     camMat = Mat::zeros(1920,1080,CV_8UC3);
     
     state.addListener(this, &ofApp::setStatus);
-    int newState = SUPERPIXELS;
+    int newState = RUN;
     setStatus(newState);
 
-    firstTime = false;
 }
 
 void ofApp::listenerFunction(ofAbstractParameter& e){
@@ -50,33 +49,29 @@ void ofApp::listenerFunction(ofAbstractParameter& e){
 }
 
 void ofApp::setStatus(int & newState){
-    
-    
-    
+
     switch(newState){
             
         case SELECT_ROI:
         {
-            state = SELECT_ROI;
-            currentState = "Select ROI";
-            ofSetFrameRate(30);
-            
             guiLaser.loadFromFile("settingsLaser_SelectROI.json");
             isActivated = false;
             
-            // Setup
             srcPoints.clear();
             srcPoints.push_back(glm::vec2(100,10));
             srcPoints.push_back(glm::vec2(730,10));
             srcPoints.push_back(glm::vec2(700,700));
             srcPoints.push_back(glm::vec2(80,710));
-            
             loadPoints("settingRoi.json", "srcPoints", srcPoints);
+            
+            currentState = SELECT_ROI;
+            currentStateStr = "Select ROI";
+            ofSetFrameRate(30);
         } break;
             
         case SUPERPIXELS:
         {
-            if(state == SELECT_ROI){
+            if(currentState == SELECT_ROI){
                 // save images if previous SEL_ROI
                 ofImage ofImg;
                 toOf(camMat, ofImg);
@@ -85,10 +80,6 @@ void ofApp::setStatus(int & newState){
                 toOf(roiMat, ofImg);
                 ofImg.save("captures/roi/"+ofGetTimestampString("%y%m%d_%H-%M-%S")+"_roi.jpg", OF_IMAGE_QUALITY_BEST);
             }
-            
-            state = SUPERPIXELS;
-            currentState = "Superpixels";
-            ofSetFrameRate(30);
 
             // load images
             ofDirectory dir;
@@ -99,55 +90,69 @@ void ofApp::setStatus(int & newState){
 
             ofImage loadImg;
             loadImg.load(filename);
-//            loadImg.load("captures/roi/test_col.jpg");
             roiMat = toCv(loadImg).clone();
 
             guiSegmentation.loadFromFile("settingsSuperpixels.json");
             
             segmentator.doUpdate = true;
             
-            
-           
-        } break;
-            
-        case SEGMENTATION:
-        {
-            state = SEGMENTATION;
-            currentState = "Segmentation";
-            ofSetFrameRate(60);
-            
-            guiSegmentation.loadFromFile("settingsSegmentation.json");
-            
-            segmentator.doUpdate = true;
-            
-            
-            ofImage ofImg;
-            toOf(camMat, ofImg);
-            ofImg.save("captures/inputImages/"+ofGetTimestampString("%y%m%d_%H-%M-%S")+"_inputImage.jpg", OF_IMAGE_QUALITY_BEST);
-            
-            toOf(roiMat, ofImg);
-            ofImg.save("captures/roi/"+ofGetTimestampString("%y%m%d_%H-%M-%S")+"_roi.jpg", OF_IMAGE_QUALITY_BEST);
+            currentState = SUPERPIXELS;
+            currentStateStr = "Superpixels";
+            ofSetFrameRate(30);
         } break;
             
         case RUN:
         {
-            firstTime = false;
-            state = RUN;
-            currentState = "wandernder Punkt";
-            ofSetFrameRate(60);
+            if(currentState == SUPERPIXELS){
+                segmentator.groupSegmentSuperPixels();
+
+                
+                for (int i = 0; i<10; i++){
+                    for(auto & sp: segmentator.superPixels){
+                        if(sp.segment==i){
+                            ofFloatImage sektionImg;
+                            sektionImg.setFromPixels(sp.getBoundaryPixels(i==0?true:false));
+                            sektionImg.update();
+                            if(i == 0) sektionImg.save("masks/boundrys.jpg",OF_IMAGE_QUALITY_BEST);
+                            else{
+                               sektionImg.save("masks/sektion_"+ofToString(i)+".jpg",OF_IMAGE_QUALITY_BEST);
+                                sp.setupContours();
+                                walker.addZone(sp.contour.getPolyline(0));
+                            }
+                        }
+                    }
+                }
+            }
             
+            walker.setBoundaryPixels("masks/boundrys.jpg");
+
+            if(currentState != CALIB_POINTS){
+                camMat = ipCam.get();
+                
+                ofImage ofImg;
+                toOf(camMat, ofImg);
+                ofImg.save("captures/camOnRun/"+ofGetTimestampString("%y%m%d_%H-%M-%S")+"_inputImage.jpg", OF_IMAGE_QUALITY_BEST);
+            }
             guiLaser.loadFromFile("settingsLaser_Run.json");
-            gui.loadFromFile("settingsWalker.json");
+            if(currentState != RUN) gui.loadFromFile("settingsWalker.json");
             
-            segmentator.groupSegmentSuperPixels();
-            for(auto & sp: segmentator.superPixels)if(sp.segment==1) walker.setBoundaryPixels(sp.getBoundaryPixels());
+            currentState = RUN;
+            currentStateStr = "wandernder Punkt";
+            ofSetFrameRate(60);
         } break;
         
         case CALIB_POINTS:
-        {
-            state = CALIB_POINTS;
-            currentState = "calibration points";
-            ofSetFrameRate(30);
+            // load images
+            ofDirectory dir;
+            dir.open("captures/roi");
+            dir.listDir();
+            dir.sortByDate();
+            string filename = dir.getPath(dir.size()-1);
+            
+            ofImage loadImg;
+            loadImg.load(filename);
+            roiMat = toCv(loadImg).clone();
+
             
             guiLaser.loadFromFile("settingsLaser_CalibPoints.json");
             isActivated = true;
@@ -157,7 +162,12 @@ void ofApp::setStatus(int & newState){
             calibPoints.push_back(glm::vec2(200,200));
 
             loadPoints("settingCalibPoints.json", "calibPoints", calibPoints);
+            
+            currentState = CALIB_POINTS;
+            currentStateStr = "calibration points";
+            ofSetFrameRate(30);
         } break;
+            
         default:
             break;
     }
@@ -165,7 +175,7 @@ void ofApp::setStatus(int & newState){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    switch(state){
+    switch(currentState){
 
         case SELECT_ROI:
         {
@@ -183,19 +193,12 @@ void ofApp::update(){
             if(isActivated.get()) dac.setPoints(ildaFrame);
             
             if(!movingPoint) savePoints("settingRoi.json", "srcPoints", srcPoints);
-
-            
         } break;
             
         case SUPERPIXELS:
         {
             segmentator.slic(roiMat);
             segmentator.manualSelect();
-        } break;
-            
-        case SEGMENTATION:
-        {
-            segmentator.slic(roiMat);
         } break;
             
         case RUN:
@@ -206,8 +209,6 @@ void ofApp::update(){
             ildaFrame.update();
             // send points to the DAC
             if(isActivated.get()) dac.setPoints(ildaFrame);
-            
-
         } break;
         
         case CALIB_POINTS:
@@ -237,7 +238,6 @@ void ofApp::update(){
             if(isActivated.get()) dac.setPoints(ildaFrame);
             
             if(!movingPoint) savePoints("settingCalibPoints.json", "calibPoints", calibPoints);
-            
         } break;
             
         default:
@@ -265,7 +265,7 @@ void ofApp::draw(){
     
     stringstream windowInfo;
 
-    switch(state){
+    switch(currentState){
 
         case SELECT_ROI:
         {
@@ -285,26 +285,16 @@ void ofApp::draw(){
             
             guiLaser.draw();
             guiIPCam.draw();
-            if(firstTime) state = SEGMENTATION;
         } break;
             
         case SUPERPIXELS:
         {
             segmentator.draw();
             guiSegmentation.draw();
-            if(firstTime) state = (RUN);
-        } break;
-            
-        case SEGMENTATION:
-        {
-            segmentator.draw();
-            guiSegmentation.draw();
-            if(firstTime) state = (RUN);
         } break;
             
         case RUN:
         {
-
             int x = ofGetWidth()-ofGetHeight();
             int y = 0;
             int w = ofGetHeight();
@@ -345,7 +335,7 @@ void ofApp::draw(){
             break;
     }
     
-    windowInfo << currentState + " | FPS: "+ofToString(ofGetFrameRate());
+    windowInfo << currentStateStr + " | FPS: "+ofToString(ofGetFrameRate());
     ofSetWindowTitle(windowInfo.str());
 }
 
@@ -375,19 +365,14 @@ void ofApp::keyPressed(int key){
 
     
     if(key=='x'){
-        switch(state){
+        switch(currentState){
                 
             case SELECT_ROI:
             {
-                state = (SEGMENTATION);
+                state = (SUPERPIXELS);
             } break;
                 
             case SUPERPIXELS:
-            {
-                state = (RUN);
-            } break;
-                
-            case SEGMENTATION:
             {
                 state = (RUN);
             } break;
@@ -412,14 +397,14 @@ void ofApp::keyPressed(int key){
     }
     
     if(key=='s'&& cmdDown ){
-        switch(state){
+        switch(currentState){
                 
             case SELECT_ROI:
             {
                 guiLaser.saveToFile("settingsLaser_SelectROI.json");
             } break;
                 
-            case SEGMENTATION:
+            case SUPERPIXELS:
             {
                 guiSegmentation.saveToFile("settingsSegmentation.json");
             } break;
@@ -441,14 +426,14 @@ void ofApp::keyPressed(int key){
     }
     
     if(key=='l'&& cmdDown ){
-        switch(state){
+        switch(currentState){
                 
             case SELECT_ROI:
             {
                 guiLaser.loadFromFile("settingsLaser_SelectROI.json");
             } break;
                 
-            case SEGMENTATION:
+            case SUPERPIXELS:
             {
                 guiSegmentation.loadFromFile("settingsSegmentation.json");
             } break;

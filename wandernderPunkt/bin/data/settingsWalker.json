@@ -1,7 +1,7 @@
 {
     "group": {
         "Walker": {
-            "Length": "1000",
+            "Length": "159",
             "Modulator": {
                 "doFollowDirection": "0",
                 "xAmplitude": "0",
@@ -12,12 +12,16 @@
             "MovementPattern": "0",
             "Scaler": "0.331633",
             "Speed": "0.01",
+            "attractorMove": "0.001",
             "doModulate": "1",
+            "doWriteText": "1",
             "lineColor": "0, 1, 1, 1",
             "maxForce": "0.00143136",
             "maxRepulsion": "0.00530891",
             "maxRepulsionSpeed": "0.00663544",
-            "minDistancePred": "0"
-        }
+            "minDistancePred": "0",
+            "textHeight": "0.3"
+        },
+        "state": "3"
     }
 }

@@ -474,12 +474,10 @@ void Segmentator::groupSegmentSuperPixels(){
         for( auto i2 = i+1; i2 != superPixels.end(); )
         {
             
-            if(i->segment == 1 && i2->segment == 1){
+            if(i->segment == i2->segment && i->segment!=-1){
                 bitwise_or(i->mask, i2->mask, i->mask);
-                                
                 
                 for(auto & c : i2->centroids) i->centroids.push_back(c);
-                
                 
                 i2 = superPixels.erase(i2);
             }

@@ -41,12 +41,14 @@ public:
     ofParameter<float> minDistancePred{"minDistancePred", 0.1f, 0.0f, 1.0f};
     ofParameter<int> length{"Length", 200, 1, 1000};
     ofParameter<bool> doWriteText{"doWriteText", true};
+    ofParameter<float> textHeight{"textHeight", 0.1f, 0.0f, 1.0f};
 
     ofParameter<bool> doModulate{"doModulate", true};
     ofParameter<float> attractorMove{"attractorMove", 0.0001f, 0.0f, 0.001f};
     ofParameter<ofFloatColor> lineColor{ "lineColor", ofFloatColor::cyan };
-    ofParameterGroup parameters{"Walker", scaler, speed, maxForce, maxRepulsion, maxRepulsionSpeed, minDistancePred, length,doWriteText, doModulate,attractorMove,lineColor};
+    ofParameterGroup parameters{"Walker", scaler, speed, maxForce, maxRepulsion, maxRepulsionSpeed, minDistancePred, length,doWriteText,textHeight, doModulate,attractorMove,lineColor};
     
+    void setTextSize(float & p);
     
     glm::vec3 pos;
     glm::vec3 vel;
@@ -66,8 +68,12 @@ public:
     ofImage boundaryImage;
     bool hasBoundaryPixels = false;
     
-    
+    void setBoundaryPixels(string path);
     void setBoundaryPixels(ofFloatPixels boundaryPixels);
+    void saveBoundaryImage(string path);
+    
+    glm::vec3 getAvoidSteer(glm::vec3 pos);
+    float getPixel(glm::vec2 pos);
     
     void checkAttracktorsWithinBoarders();
     
@@ -101,5 +107,6 @@ public:
     void draw(int x, int y, int w, int h);
     
     WriteOnLine writeOnLine;
+    bool wasWriting;
 };
 #endif /* Walker_hpp */

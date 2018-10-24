@@ -18,12 +18,11 @@ float SuperPixel::getMinDist(glm::vec2 centroid){
 }
 
 
-
-ofFloatPixels SuperPixel::getBoundaryPixels(){
+ofFloatPixels SuperPixel::getBoundaryPixels(bool doInvert){
     Mat invMask;
     mask.copyTo(invMask);
 //    cvtColor(invMask, invMask, COLOR_BGR2GRAY);
-    bitwise_not ( invMask, invMask );
+    if(doInvert) bitwise_not ( invMask, invMask );
 //    invert(invMask, invMask);
     /// Get the contours
     vector<vector<cv::Point> > contours;
@@ -39,6 +38,7 @@ ofFloatPixels SuperPixel::getBoundaryPixels(){
         }
     }
     
+    // create image
     double minVal, maxVal;
     minMaxLoc( raw_dist, &minVal, &maxVal );
     minVal = abs(minVal);
@@ -89,8 +89,14 @@ ofFloatPixels SuperPixel::getBoundaryPixels(){
             drawing.at<Vec3f>(i,j)[2] = grad_y.at<float>(i,j);
         }
     }
-                ofImage ofImg;
-                ofImg.setFromPixels(boundarys);
-                ofImg.save("distMap.jpg", OF_IMAGE_QUALITY_BEST);
+//                ofImage ofImg;
+//                ofImg.setFromPixels(boundarys);
+//                ofImg.save("distMap.jpg", OF_IMAGE_QUALITY_BEST);
+    
     return boundarys;
     }
+
+
+void SuperPixel::setupContours(){
+    contour.findContours(mask);
+}

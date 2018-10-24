@@ -20,13 +20,14 @@ public:
     cv::MatND hist;
     vector<glm::vec2> centroids;
     ofxCv::ContourFinder contour;
+    void setupContours();
     
     int segment=-1;
 
     
     float getMinDist(glm::vec2 centroid);
-    ofFloatPixels getBoundaryPixels();
-   
+    ofFloatPixels getBoundaryPixels(bool doInvert);
+    
 };
 
 #endif /* SuperPixel_hpp */

@@ -22,7 +22,25 @@ Walker::Walker(){
     }
     target=attractors[random.getNext()].getPos();
     
-    writeOnLine.setup("text.svg", 0, 0.0004, target, pos);
+    writeOnLine.setup("text.svg", 0, 0.001, target, pos);
+    
+    textHeight.addListener(this, &Walker::setTextSize);
+}
+
+void Walker::setTextSize(float & p){
+    writeOnLine.setScale(p*0.003);
+}
+
+void Walker::setBoundaryPixels(string path){
+    ofFloatImage img;
+    img.load(path);
+    this->boundaryPixels = img.getPixels();
+    hasBoundaryPixels = true;
+    
+    boundaryImage.setFromPixels(boundaryPixels.getChannel(0));
+    boundaryImage.update();
+    checkAttracktorsWithinBoarders();
+    
 }
 
 void Walker::setBoundaryPixels(ofFloatPixels boundaryPixels){
@@ -33,6 +51,15 @@ void Walker::setBoundaryPixels(ofFloatPixels boundaryPixels){
     boundaryImage.update();
     checkAttracktorsWithinBoarders();
     
+}
+
+void Walker::saveBoundaryImage(string path){
+    this->boundaryPixels = boundaryImage.getPixels();
+    hasBoundaryPixels = true;
+    
+    ofFloatImage bImg;
+    bImg.setFromPixels(boundaryPixels);
+    bImg.save(path,OF_IMAGE_QUALITY_BEST);
 }
 
 void Walker::checkAttracktorsWithinBoarders(){
@@ -77,6 +104,31 @@ void Walker::avoid(glm::vec3 target, float minDistance) {
     
 }
 
+float Walker::getPixel(glm::vec2 pos){
+    int w = boundaryPixels.getWidth();
+    int h = boundaryPixels.getHeight();
+    if(pos.x < 0) pos.x = 0.0;
+    if(pos.x > 1) pos.x = 1.0;
+    if(pos.y < 0) pos.y = 0.0;
+    if(pos.y > 1) pos.y = 1.0;
+    ofFloatColor bCol = boundaryPixels.getColor(pos.x*w, pos.y*h);
+    return bCol.r;
+}
+
+glm::vec3 Walker::getAvoidSteer(glm::vec3 pos){
+
+    glm::vec2 vPos = glm::vec2(pos.x,pos.y);
+        const float fDelta = 0.001;
+    
+        glm::vec2 vNormal =
+        getPixel( glm::vec2(1, -1) * fDelta + vPos ) * glm::vec2(1, -1) +
+        getPixel( glm::vec2(-1, 1) * fDelta + vPos ) * glm::vec2(-1, 1) +
+        getPixel( glm::vec2(-1, -1) * fDelta + vPos ) * glm::vec2(-1, -1) +
+        getPixel( glm::vec2(1, 1) * fDelta + vPos ) * glm::vec2(1, 1);
+    glm::vec3 out = glm::normalize( glm::vec3(vNormal,0.00000000000001) ); // hack to avoid noramliying a yero vector
+    return glm::vec3(out.x, out.z, 0)*-1;
+}
+
 void Walker::update(){
     // Noise based Movement
     
@@ -94,24 +146,30 @@ void Walker::update(){
             //                if(pos.y < boarder)  { bBorders = true; desired = glm::vec3(vel.x,speed.get(),0);}
             
             
+            
+            
             int w = boundaryPixels.getWidth();
             int h = boundaryPixels.getHeight();
             ofFloatColor bCol = boundaryPixels.getColor(pos.x*w, pos.y*h);
-            //                cout << pos.x*w << " / " << pos.y*h << endl;
-            if(bCol.r<0.2) bBorders = false;
             
+            if(bCol.r<0.2) bBorders = false;
+
             if(bCol.r > 0.81 || bBorders){
                 bBorders = true;
                 desired = glm::vec3(-(bCol.g-0.5), -(bCol.b-0.5),0)*speed.get();
                 seek(glm::vec3(0.5,0.5,0));
             }
-            
+
             if(bBorders){
                 glm::vec3 steer = desired - vel;
                 if(glm::length(steer)>speed.get()) steer = glm::normalize(steer)*speed.get();
                 vel = vel + steer;
             }
-            
+
+//            if(bCol.r>0.8){
+//                vel = vel + getAvoidSteer(pos)*speed.get();
+//            }
+//
             for(int i = 0; i< attractors.size(); i++){
                 if(i!=activeAttractor){
                     avoid(attractors[i].getPos(), minDistancePred);
@@ -137,10 +195,15 @@ void Walker::update(){
                 
                 // Write On Line
                 if(doWriteText){
+                    if(wasWriting==false){
+                        writeOnLine.setCurrentIndex(-1); // start at the beginning
+                    }
                     writeOnLine.setOrigin(pos);
                     writeOnLine.setTarget(target);
                     writeOnLine.nextWord();
                 }
+                wasWriting = doWriteText;
+
                 
             }
             // activate all attractors exept the one which is target
@@ -148,7 +211,12 @@ void Walker::update(){
                 
                 attractor.setPos( attractor.getPos()+attractor.vel*attractorMove.get());
                 ofFloatColor bCol = boundaryPixels.getColor(attractor.getPos().x*w, attractor.getPos().y*h);
-                if(bCol.r > 0.80) attractor.vel*= -1;
+                if(bCol.r > 0.80){
+//                    float aSpeed = glm::length(attractor.vel);
+//                    attractor.vel = attractor.vel + getAvoidSteer(attractor.getPos())*aSpeed;
+//                    attractor.vel = glm::normalize(attractor.vel)*aSpeed;
+                    attractor.vel*= -1;
+                }
                 
             }
             
@@ -316,7 +384,6 @@ void Walker::update(){
     // ADD TEXT - WRITE ON LINE
     if(doWriteText){
         linePos = pos+writeOnLine.getOffset(pos);
-        cout << writeOnLine.getOffset(pos) << endl;
     }
     
     // jump walls
