@@ -13,7 +13,7 @@
             "PolyProcessor": {
                 "optimizeTolerance": "0",
                 "smoothAmount": "0",
-                "spacing": "0.00105029",
+                "spacing": "6.65933e-06",
                 "targetPointCount": "498"
             },
             "Scale": "0, 0",
@@ -25,7 +25,7 @@
             "end_Blanks": "0",
             "end_Count": "0",
             "fadeLength": "0.202906",
-            "masterColor": "0.118056, 0.118056, 0.118056, 1",
+            "masterColor": "1, 1, 1, 1",
             "start_Blanks": "19",
             "start_Count": "0",
             "useColorMap": "0"

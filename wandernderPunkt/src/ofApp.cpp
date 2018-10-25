@@ -142,6 +142,7 @@ void ofApp::setStatus(int & newState){
         } break;
         
         case CALIB_POINTS:
+        {
             // load images
             ofDirectory dir;
             dir.open("captures/roi");
@@ -153,7 +154,6 @@ void ofApp::setStatus(int & newState){
             loadImg.load(filename);
             roiMat = toCv(loadImg).clone();
 
-            
             guiLaser.loadFromFile("settingsLaser_CalibPoints.json");
             isActivated = true;
             

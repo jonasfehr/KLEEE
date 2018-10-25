@@ -20,6 +20,8 @@ Walker::Walker(){
         attractors.push_back(attractor);
         random.add();
     }
+    checkAttracktorsWithinBoarders();
+
     target=attractors[random.getNext()].getPos();
     
     writeOnLine.setup("text.svg", 0, 0.001, target, pos);
