@@ -1,0 +1,25 @@
+{
+    "group": {
+        "Filter": {
+            "alpha": "0.0482701",
+            "doAnistriopicDiffusion": "1",
+            "doEdgePreservingFiltering": "0",
+            "doStylisation": "0",
+            "iterations": "10",
+            "k": "1",
+            "sigma_r_EPF": "0.586735",
+            "sigma_r_S": "1",
+            "sigma_s_EPF": "26",
+            "sigma_s_S": "66"
+        },
+        "SLIC": {
+            "Algorithm": "0",
+            "Iterations": "22",
+            "Region_size": "85",
+            "Ruler": "67",
+            "combine_treshold": "0.923469",
+            "maxDistance": "240.327",
+            "min_element_size": "16"
+        }
+    }
+}

@@ -1,0 +1,39 @@
+{
+	"pattrstorage" : 	{
+		"name" : "kleeeRun",
+		"slots" : 		{
+			"1" : 			{
+				"id" : 1,
+				"data" : 				{
+					"length" : [ 1 ],
+					"doWriteText" : [ 0 ],
+					"color" : [ 0.0, 0.0, 0.0 ]
+				}
+
+			}
+,
+			"2" : 			{
+				"id" : 2,
+				"data" : 				{
+					"length" : [ 1000 ],
+					"doWriteText" : [ 0 ],
+					"color" : [ 0.0, 1.0, 1.0 ]
+				}
+
+			}
+,
+			"3" : 			{
+				"id" : 3,
+				"data" : 				{
+					"length" : [ 200 ],
+					"doWriteText" : [ 1 ],
+					"color" : [ 1.0, 0.829457, 0.131783 ]
+				}
+
+			}
+
+		}
+
+	}
+
+}
