@@ -4,12 +4,12 @@
 		"appversion" : 		{
 			"major" : 7,
 			"minor" : 3,
-			"revision" : 5,
+			"revision" : 6,
 			"architecture" : "x86",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 748.0, 538.0, 1356.0, 778.0 ],
+		"rect" : [ 530.0, 285.0, 1356.0, 778.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -529,7 +529,7 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
+							"revision" : 6,
 							"architecture" : "x86",
 							"modernui" : 1
 						}
@@ -1336,14 +1336,13 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-203",
-					"linecount" : 2,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 913.0, 315.0, 253.0, 35.0 ],
+					"patching_rect" : [ 913.0, 315.0, 253.0, 22.0 ],
 					"style" : "",
-					"text" : "/group/Walker/lineColor \"1, 0.828197, 0.130571, 1\""
+					"text" : "/group/Walker/textHeight 0.178571"
 				}
 
 			}
@@ -1474,7 +1473,7 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
+							"revision" : 6,
 							"architecture" : "x86",
 							"modernui" : 1
 						}
@@ -1812,7 +1811,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 821.0, 78.0, 50.0, 22.0 ],
 					"style" : "",
-					"text" : "2"
+					"text" : "1"
 				}
 
 			}
@@ -2133,7 +2132,7 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
+							"revision" : 6,
 							"architecture" : "x86",
 							"modernui" : 1
 						}
@@ -2533,7 +2532,7 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
+							"revision" : 6,
 							"architecture" : "x86",
 							"modernui" : 1
 						}
@@ -3099,7 +3098,7 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
+							"revision" : 6,
 							"architecture" : "x86",
 							"modernui" : 1
 						}
@@ -3131,6 +3130,7 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
+						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"comment" : "",
@@ -3658,9 +3658,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 160.0, 85.0, 37.0, 22.0 ],
+									"patching_rect" : [ 160.0, 85.0, 41.0, 22.0 ],
 									"style" : "",
-									"text" : "port j"
+									"text" : "port b"
 								}
 
 							}
@@ -3671,9 +3671,9 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "int", "" ],
-									"patching_rect" : [ 160.0, 199.0, 95.0, 22.0 ],
+									"patching_rect" : [ 160.0, 199.0, 79.0, 22.0 ],
 									"style" : "",
-									"text" : "serial j 9600"
+									"text" : "serial b 9600"
 								}
 
 							}
@@ -4847,28 +4847,28 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "sendToOFint.maxpat",
-				"bootpath" : "~/ResilioSync/Projects/18_07_LaserMitJohannesGees/Software",
+				"bootpath" : "~/Documents/openFrameworks/apps/wandernderPunkt/kleeeControl",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "pattr-helper.maxpat",
-				"bootpath" : "~/ResilioSync/Projects/18_07_LaserMitJohannesGees/Software",
+				"bootpath" : "~/Documents/openFrameworks/apps/wandernderPunkt/kleeeControl",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "kleeeRun.json",
-				"bootpath" : "~/ResilioSync/Projects/18_07_LaserMitJohannesGees/Software",
+				"bootpath" : "~/Documents/openFrameworks/apps/wandernderPunkt/kleeeControl",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "sendToOFColor.maxpat",
-				"bootpath" : "~/ResilioSync/Projects/18_07_LaserMitJohannesGees/Software",
+				"bootpath" : "~/Documents/openFrameworks/apps/wandernderPunkt/kleeeControl",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1

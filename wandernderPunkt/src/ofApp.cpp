@@ -6,6 +6,7 @@
 #define ROI_PREVIEW_H 600
 //--------------------------------------------------------------
 void ofApp::setup(){
+    ofSetFrameRate(60);
     dac.setup(true, 0, true);
     dac.setPPS(LASER_PPSx1000*1000);
     ildaFrame.setup();
