@@ -50,7 +50,10 @@ public:
     ofxPanel guiLaser;
     ofxPanel guiIPCam;
     ofxPanel guiSegmentation;
-
+    ofParameter<ofFloatColor> crossColor{ "crossColor", ofFloatColor::black };
+    ofParameterGroup crossParam = {"crossParam", crossColor };
+    ofxPanel guiCrossParam;
+    ofParameterGroup unitedParameters;
     
     ofxPanel gui;
     ofParameter<bool> isActivated{"isActivated", false};
@@ -128,5 +131,7 @@ public:
     ofxOscParameterSync sync;
     ofParameter<int> state;
     int currentState;
+    
+
 
 };

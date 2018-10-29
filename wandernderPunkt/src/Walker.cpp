@@ -20,7 +20,7 @@ Walker::Walker(){
         attractors.push_back(attractor);
         random.add();
     }
-    checkAttracktorsWithinBoarders();
+
 
     target=attractors[random.getNext()].getPos();
     
@@ -42,6 +42,9 @@ void Walker::setBoundaryPixels(string path){
     boundaryImage.setFromPixels(boundaryPixels.getChannel(0));
     boundaryImage.update();
     checkAttracktorsWithinBoarders();
+    
+    target=attractors[random.getNext()].getPos();
+
     
 }
 
@@ -203,6 +206,8 @@ void Walker::update(){
                     writeOnLine.setOrigin(pos);
                     writeOnLine.setTarget(target);
                     writeOnLine.nextWord();
+                    
+                    if(writeOnLine.isFinished()) doWriteText = false;
                 }
                 wasWriting = doWriteText;
 
@@ -221,6 +226,9 @@ void Walker::update(){
                 }
                 
             }
+            
+            
+            
             
         }
             break;
@@ -405,6 +413,20 @@ void Walker::update(){
     //  create poly
     poly.clear();
     poly.addVertices(history);
+    
+    
+    // Supersafety
+    if(history.size()>=length && length > 20){
+        int i = 0;
+        glm::vec3 averagePos = glm::vec3(0);
+        for(auto & h : history){
+            i++;
+            averagePos = averagePos+h;
+        }
+        averagePos = averagePos/i;
+        float dist = glm::distance(averagePos,pos);
+        if(dist < 0.001) pos = glm::vec3(0.5,0.5,0);
+    }
     
 }
 

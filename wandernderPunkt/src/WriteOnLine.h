@@ -26,7 +26,7 @@ public:
             p.setPolyWindingMode(OF_POLY_WINDING_ODD);
             const vector<ofPolyline>& lines = p.getOutline();
             for(const ofPolyline & line: lines){
-                outlines.push_back(line.getResampledBySpacing(1));
+                outlines.push_back(line);//.getResampledBySpacing(  1));
             }
         }
 
@@ -36,12 +36,8 @@ public:
     }
     
     void nextWord(){
-        currentIndex = (currentIndex+1)%outlines.size();
-        cout << currentIndex<< endl;
-
+        currentIndex = (currentIndex+1);//%outlines.size();
         select(currentIndex);
-        cout << currentIndex<< endl;
-        cout << endl;
     }
     
     
@@ -68,7 +64,6 @@ public:
         float scaleX = distancePoints/wordLength;
         glm::mat4 scalingMatrix = glm::scale(glm::vec3(drawWidth/word.getBoundingBox().width, drawHeight/word.getBoundingBox().height , 1.0f));
         
-        
         transform = translationMatrix * rotationMatrix * scalingMatrix;
         
         amtWord = drawWidth/distancePoints;
@@ -94,6 +89,7 @@ public:
     }
     
     glm::vec3 getOffset(float step){
+        if(currentIndex > outlines.size()-1) return glm::vec3(0.);
         return getPoint(step)-(glm::normalize(target-origin) * step * distancePoints +origin);
     }
     
@@ -126,6 +122,15 @@ public:
     void setCurrentIndex(int index){
         this->currentIndex = index;
     };
+    
+    int getCurrentIndex(){
+        return this->currentIndex;
+    };
+    
+    bool isFinished(){
+        if(currentIndex>outlines.size()-1) return true;
+        else return false;
+    }
     
 private:
     glm::mat4  transform;

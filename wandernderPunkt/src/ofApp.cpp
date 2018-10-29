@@ -17,8 +17,6 @@ void ofApp::setup(){
     gui.add(state);
     gui.add(walker.parameters);
     gui.setPosition(220,10);
-    sync.setup((ofParameterGroup&)gui.getParameter(),8888,"localhost",8889);
-
 
     guiIPCam.setup();
     guiIPCam.add(ipCam.parameters);
@@ -31,9 +29,24 @@ void ofApp::setup(){
     guiSegmentation.setup();
     guiSegmentation.add(segmentator.parametersFilters);
     guiSegmentation.add(segmentator.parametersSLIC);
+    
+    guiCrossParam.setup();
+    guiCrossParam.add(crossParam);
+    guiCrossParam.setPosition(220,10);
+
 
     ofAddListener(parameters.parameterChangedE(), this, &ofApp::listenerFunction);
     
+    unitedParameters.add(state);
+    unitedParameters.add(walker.parameters);
+    unitedParameters.add(crossParam);
+
+//    unitedParameters.add(parameters);
+//    unitedParameters.add(ildaFrame.parameters);
+    
+    sync.setup(unitedParameters,8888,"localhost",8889);
+
+
     createTestRect();
     
     roiMat.create(1024,1024,CV_8UC3);
@@ -234,7 +247,7 @@ void ofApp::update(){
 
             
             ildaFrame.clear();
-            ildaFrame.addPolys(cross,ofFloatColor::white);
+            ildaFrame.addPolys(cross,crossColor);
             ildaFrame.update();
             if(isActivated.get()) dac.setPoints(ildaFrame);
             
@@ -330,6 +343,7 @@ void ofApp::draw(){
             ofPopStyle();
             
             guiLaser.draw();
+            guiCrossParam.draw();
         } break;
             
         default:
