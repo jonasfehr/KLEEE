@@ -230,18 +230,18 @@ void ofApp::update(){
             vector<ofPolyline> cross;
             
             ofPolyline line;
-            float squareSize = 0.05;
+            float squareSize = 0.1;
             for(auto & calibPoint : calibPoints){
                 glm::vec2 cP_pts = glm::vec2(calibPoint.x/ROI_PREVIEW_W,calibPoint.y/ROI_PREVIEW_H);
                 
                 line.clear();
-                line.addVertex(glm::vec3(cP_pts.x-squareSize, cP_pts.y - squareSize, 0));
-                line.addVertex(glm::vec3(cP_pts.x+squareSize, cP_pts.y + squareSize, 0));
+                line.addVertex(glm::vec3(cP_pts.x-squareSize, cP_pts.y, 0));
+                line.addVertex(glm::vec3(cP_pts.x+squareSize, cP_pts.y, 0));
                 cross.push_back(line);
                 
                 line.clear();
-                line.addVertex(glm::vec3(cP_pts.x-squareSize, cP_pts.y + squareSize, 0));
-                line.addVertex(glm::vec3(cP_pts.x+squareSize, cP_pts.y - squareSize, 0));
+                line.addVertex(glm::vec3(cP_pts.x, cP_pts.y + squareSize, 0));
+                line.addVertex(glm::vec3(cP_pts.x, cP_pts.y - squareSize, 0));
                 cross.push_back(line);
             }
 
