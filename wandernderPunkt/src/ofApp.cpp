@@ -247,7 +247,7 @@ void ofApp::update(){
 
             
             ildaFrame.clear();
-            ildaFrame.addPolys(cross,crossColor);
+            ildaFrame.addPolys(cross,crossColor);   
             ildaFrame.update();
             if(isActivated.get()) dac.setPoints(ildaFrame);
             

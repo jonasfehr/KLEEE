@@ -50,6 +50,7 @@ public:
     ofxPanel guiLaser;
     ofxPanel guiIPCam;
     ofxPanel guiSegmentation;
+    ofParameter<bool> doRecrd{ "doRecord", false };
     ofParameter<ofFloatColor> crossColor{ "crossColor", ofFloatColor::black };
     ofParameterGroup crossParam = {"crossParam", crossColor };
     ofxPanel guiCrossParam;
