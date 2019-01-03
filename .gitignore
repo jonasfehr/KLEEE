@@ -86,3 +86,7 @@ Desktop.ini
 
 # Resilio Sync
 *.rsls
+*.rslsi
+*.rslsz
+
+*/bin/data/captures/*
