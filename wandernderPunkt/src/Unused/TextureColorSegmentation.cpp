@@ -357,8 +357,8 @@ void TextureColorSegmentation::hist(Mat src)
     float var=mu2-(mu1*mu1);
     var/=100;
     /// Display
-    namedWindow("calcHist Demo", CV_WINDOW_AUTOSIZE );
-    imshow("calcHist Demo", histImage );
+  //  namedWindow("calcHist Demo", CV_WINDOW_AUTOSIZE );
+  //  imshow("calcHist Demo", histImage );
     
     cout<<"Var:"<<var<<endl;
     cout<<"Peaks:"<<peaks<<endl;

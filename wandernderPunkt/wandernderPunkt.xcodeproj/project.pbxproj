@@ -1446,7 +1446,8 @@
 					../../../addons/ofxGui/src,
 					../../../addons/ofxIlda/src,
 					../../../addons/ofxIpCamStreamer/src,
-					/usr/local/Cellar/opencv/3.4.5/include,
+					/usr/local/Cellar/opencv/4.0.1/include/opencv4,
+					/usr/local/Cellar/opencv/4.0.1/include/opencv4/opencv,
 					../../../addons/ofxOsc/libs,
 					../../../addons/ofxOsc/libs/oscpack,
 					../../../addons/ofxOsc/libs/oscpack/src,
@@ -1478,16 +1479,16 @@
 				INFOPLIST_FILE = "openFrameworks-Info.plist";
 				INSTALL_PATH = /Applications;
 				LIBRARY_SEARCH_PATHS = (
-					/usr/local/Cellar/opencv/3.4.5/lib,
+					/usr/local/Cellar/opencv/4.0.1/lib,
 					"$(PROJECT_DIR)/src",
 				);
 				OTHER_LDFLAGS = (
 					"$(OF_CORE_LIBS)",
 					"$(OF_CORE_FRAMEWORKS)",
 					"$(LIB_OF)",
-					"-I/usr/local/Cellar/opencv/3.4.5/include/opencv/opencv",
-					"-I/usr/local/Cellar/opencv/3.4.5/include/opencv",
-					"-L/usr/local/Cellar/opencv/3.4.5/lib",
+					"-I/usr/local/Cellar/opencv/4.0.1/include/opencv4/opencv",
+					"-I/usr/local/Cellar/opencv/4.0.1/include/opencv4",
+					"-L/usr/local/Cellar/opencv/4.0.1/lib",
 					"-lopencv_gapi",
 					"-lopencv_stitching",
 					"-lopencv_aruco",
@@ -1696,7 +1697,8 @@
 					../../../addons/ofxGui/src,
 					../../../addons/ofxIlda/src,
 					../../../addons/ofxIpCamStreamer/src,
-					/usr/local/Cellar/opencv/3.4.5/include,
+					/usr/local/Cellar/opencv/4.0.1/include/opencv4,
+					/usr/local/Cellar/opencv/4.0.1/include/opencv4/opencv,
 					../../../addons/ofxOsc/libs,
 					../../../addons/ofxOsc/libs/oscpack,
 					../../../addons/ofxOsc/libs/oscpack/src,
@@ -1728,13 +1730,13 @@
 				INFOPLIST_FILE = "openFrameworks-Info.plist";
 				INSTALL_PATH = /Applications;
 				LIBRARY_SEARCH_PATHS = (
-					/usr/local/Cellar/opencv/3.4.5/lib,
+					/usr/local/Cellar/opencv/4.0.1/lib,
 					"$(PROJECT_DIR)/src",
 				);
 				OTHER_LDFLAGS = (
 					"$(OF_CORE_LIBS)",
 					"$(OF_CORE_FRAMEWORKS)",
-					"$(LIB_OF_DEBUG)",
+					"$(LIB_OF)",
 					"-I/usr/local/Cellar/opencv/4.0.1/include/opencv4/opencv",
 					"-I/usr/local/Cellar/opencv/4.0.1/include/opencv4",
 					"-L/usr/local/Cellar/opencv/4.0.1/lib",
@@ -1810,7 +1812,8 @@
 					../../../addons/ofxGui/src,
 					../../../addons/ofxIlda/src,
 					../../../addons/ofxIpCamStreamer/src,
-					/usr/local/Cellar/opencv/3.4.5/include,
+					/usr/local/Cellar/opencv/4.0.1/include/opencv4,
+					/usr/local/Cellar/opencv/4.0.1/include/opencv4/opencv,
 					../../../addons/ofxOsc/libs,
 					../../../addons/ofxOsc/libs/oscpack,
 					../../../addons/ofxOsc/libs/oscpack/src,
@@ -1842,7 +1845,7 @@
 				INFOPLIST_FILE = "openFrameworks-Info.plist";
 				INSTALL_PATH = /Applications;
 				LIBRARY_SEARCH_PATHS = (
-					/usr/local/Cellar/opencv/3.4.5/lib,
+					/usr/local/Cellar/opencv/4.0.1/lib,
 					"$(PROJECT_DIR)/src",
 				);
 				OTHER_LDFLAGS = (
