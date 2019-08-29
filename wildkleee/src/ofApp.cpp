@@ -77,6 +77,10 @@ void ofApp::guiSelectChanged(string & key){
     if(key == "Runtime") {
         gui.add(parameters);
     }
+    if(key == "Zones") {
+        gui.add(parametersMapping);
+        gui.add(projector->parameters);
+    }
     
     //    int index =  zoneSelector.getIndexFromKey(key);
     //    cout << zones[index]->getNormLength() << endl;
@@ -91,9 +95,8 @@ void ofApp::onResize(){
     outputWindow.set(ofGetWidth()-outSide - 15, mainPagesRect.getHeight()+15, outSide, outSide);
     guiRect.set(15,mainPagesRect.getBottom()+10, controlWidth-10, ofGetHeight()/2-mainPagesRect.getHeight());
 
-    controlButtonsRect.set(guiRect);
-    controlButtonsRect.setWidth(30);
-    zoneButtonsRect.set(controlButtonsRect.getRight(), guiRect.getTop(), 200-30, guiRect.getHeight());
+    controlButtonsRect.set(guiRect.getLeft(), outputWindow.getTop()+outSide/2, 30, outSide/2);
+    zoneButtonsRect.set(controlButtonsRect.getRight(), controlButtonsRect.getTop(), 200-30, guiRect.getHeight());
 
 
 }
@@ -114,6 +117,12 @@ void ofApp::update(){
             projector->addPointGroup(pointGroup);
         }
     }
+    if(showMappingAid){
+        projector->clearPoints();
+        for(auto & pg : zones[zoneSelector.getIndex()]->mappingAid.getPointGroups()){
+            projector->addPointGroup(pg);
+        }
+    }
     projector->update();
 }
 
@@ -131,7 +140,6 @@ void ofApp::draw(){
     // Control
     ofSetColor(255);
     mainPages.draw();
-    projector->draw(outputWindow);
 
     string key = mainPages.getKey();
     if(key == "Runtime"){
@@ -139,18 +147,17 @@ void ofApp::draw(){
     }else if(key == "Projector"){
         gui.draw();
     }else if(key == "Zones"){
+        gui.draw();
         zoneSelector.draw();
         controlButtons.draw();
         for(auto & zone : zones){
             zone->drawOutput();
         }
     }
+    
+    projector->draw(outputWindow);
 
 
-
-
-    ofSetColor(255);
-//    projector->drawPoints(outputWindow);
     
     
 

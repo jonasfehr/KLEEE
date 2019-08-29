@@ -29,13 +29,13 @@ public:
         ConnectedWord wI("I", I);
 //        wI.addConnection(*new WC(EnumWords::REPEAT, 0.1));
         wI.addConnection(*new WC(EnumWords::WANT, 0.5));
-        wI.addConnection(*new WC(EnumWords::SAY, 0.3));
+        wI.addConnection(*new WC(EnumWords::SAY, 0.4));
         wI.normalizeWeights();
         words.insert(pair<int, ConnectedWord>(EnumWords::I, wI));
 
         ConnectedWord wWANT("WANT", WANT);
 //        wWANT.addConnection(*new WC(EnumWords::REPEAT, 0.1));
-        wWANT.addConnection(*new WC(EnumWords::TO, 0.5));
+        wWANT.addConnection(*new WC(EnumWords::TO, 0.2));
         wWANT.addConnection(*new WC(EnumWords::SOMETHING, 0.5));
         wWANT.addConnection(*new WC(EnumWords::BREAK, 0.3));
         wWANT.normalizeWeights();
@@ -53,15 +53,15 @@ public:
 //        wSAY.addConnection(*new WC(EnumWords::REPEAT, 0.1));
         wSAY.addConnection(*new WC(EnumWords::SOMETHING, 0.5));
         wSAY.addConnection(*new WC(EnumWords::I, 0.5));
-        wSAY.addConnection(*new WC(EnumWords::TO, 0.5));
+        wSAY.addConnection(*new WC(EnumWords::TO, 0.2));
         wSAY.addConnection(*new WC(EnumWords::BREAK, 0.3));
         wSAY.normalizeWeights();
         words.insert(pair<int, ConnectedWord>(EnumWords::SAY, wSAY));
 
         ConnectedWord wSOMETHING("SOMETHING", SOMETHING);
 //        wSOMETHING.addConnection(*new WC(EnumWords::REPEAT, 0.1));
-        wSOMETHING.addConnection(*new WC(EnumWords::I, 0.5));
-        wSOMETHING.addConnection(*new WC(EnumWords::TO, 0.5));
+        wSOMETHING.addConnection(*new WC(EnumWords::I, 0.3));
+        wSOMETHING.addConnection(*new WC(EnumWords::TO, 0.2));
         wSOMETHING.addConnection(*new WC(EnumWords::BREAK, 0.3));
         wSOMETHING.normalizeWeights();
         words.insert(pair<int, ConnectedWord>(EnumWords::SOMETHING, wSOMETHING));
@@ -69,7 +69,7 @@ public:
         ConnectedWord wBREAK("\n", BREAK);
         wBREAK.addConnection(*new WC(EnumWords::I, 0.8));
         wBREAK.addConnection(*new WC(EnumWords::WANT, 0.5));
-        wBREAK.addConnection(*new WC(EnumWords::TO, 0.5));
+        wBREAK.addConnection(*new WC(EnumWords::TO, 0.2));
         wBREAK.addConnection(*new WC(EnumWords::SAY, 0.5));
         wBREAK.addConnection(*new WC(EnumWords::SOMETHING, 0.5));
         wBREAK.normalizeWeights();

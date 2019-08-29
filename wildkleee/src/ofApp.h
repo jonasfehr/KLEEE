@@ -70,6 +70,7 @@ class ofApp : public ofBaseApp{
     
     ofParameter<bool> run{"run", false};
     ofParameterGroup parameters;
-    
 
+    ofParameter<bool> showMappingAid{"showMappingAid", false};
+    ofParameterGroup parametersMapping{"Mapping", showMappingAid};
 };

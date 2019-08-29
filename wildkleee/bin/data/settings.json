@@ -2,15 +2,15 @@
     "Parameters": {
         "Runtime": {
             "BrownianRythm": {
-                "EDval": "16",
-                "brownFactor": "0.2",
-                "maxED": "2000",
-                "minED": "250"
+                "EDval": "12",
+                "brownFactor": "0.01",
+                "maxED": "2732",
+                "minED": "516"
             },
             "Entry": {
-                "resSpacing": "0.00554873"
+                "resSpacing": "0.00620471"
             },
-            "masterColor": "1, 1, 1, 1",
+            "masterColor": "1, 0.464062, 0.989117, 1",
             "run": "1"
         }
     },
@@ -19,18 +19,18 @@
             "Draw_InputPoints": "1",
             "Draw_finalPoints": "1",
             "Draw_moveInBalc__red_": "1",
-            "LASER_PPSx1000": "15",
-            "blackMoveMinDist": "0.01",
+            "LASER_PPSx1000": "20",
+            "blackMoveMinDist": "0.00756633",
             "end_Blanks": "0",
-            "end_Count": "0",
+            "end_Count": "4",
             "flipX": "0",
             "flipY": "0",
             "galvoCorrection": "0",
             "isActivated": "1",
-            "masterColor": "1, 1, 1, 1",
+            "masterColor": "1, 0.464062, 0.989117, 1",
             "showSquare": "0",
-            "start_Blanks": "4",
-            "start_Count": "4"
+            "start_Blanks": "7",
+            "start_Count": "0"
         },
         "deviceID": "RayComposer NET 2168"
     },

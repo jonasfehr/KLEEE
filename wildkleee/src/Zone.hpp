@@ -16,6 +16,8 @@
 #include "ofxGui.h"
 #include "SelectableObjectBase.hpp"
 #include "SelectableObjectBase.hpp"
+#include "ContentBase.hpp"
+
 class Zone :public SelectableObjectBase{
 public:
     // ---- GUI ----
@@ -101,9 +103,11 @@ public:
         this->flipX.makeReferenceTo(flipX);
         this->flipY.makeReferenceTo(flipY);
     }
+    
+    void createMappingAid();
 
     
-
+    ContentBase mappingAid;
 private:
     ofParameter<bool> flipX{"flipX", false};
     ofParameter<bool> flipY{"flipY", false};

@@ -51,7 +51,7 @@ public:
         } else {
             if(dacIsConnected && dac != NULL){
                 dac->clear();
-                dac->stop();
+//                dac->stop();
             }
             rcDeviceID = deviceName;
             dacIsConnected = this->rcHandler->referenceInterface(dac, rcDeviceID);
@@ -87,9 +87,8 @@ public:
         }
         ofPopStyle();
         
-        if(isActive()){
+//        if(isActive())
             ildaFrame.draw(rect);
-        }
     }
     
     void update(){

@@ -71,6 +71,8 @@ void Zone::setup(string name, ofRectangle *pInputWindow, ofRectangle *pOutputWin
     updateHandles();
 
     SelectableObjectBase::setup(name);
+    createMappingAid();
+
 };
 
 void Zone::onParameterChange(ofAbstractParameter& e){
@@ -249,6 +251,7 @@ float Zone::getNormLength(){
 void Zone::updateOnChange(glm::vec2 &p){
     updateHandles();
     updateMatrix();
+    createMappingAid();
 }
 void Zone::updateMatrix(){
     matrix = getMatrix(outputHandles[0].getPos(), outputHandles[1].getPos(), outputHandles[2].getPos(), outputHandles[3].getPos());
@@ -449,6 +452,44 @@ glm::vec3 Zone::calcPos( const glm::mat4 &_mat, const glm::vec3 &v ) const {
                      (_mat[0][2]*v.x + _mat[1][2]*v.y + _mat[2][2]*v.z + _mat[3][2])*d);
 }
 
+void Zone::createMappingAid(){
+    mappingAid.clear();
+    ofPolyline poly;
+    poly.addVertex(glm::vec3(outputHandles[0].getPos(),0));
+    poly.addVertex(glm::vec3(outputHandles[1].getPos(),0));
+    poly.addVertex(glm::vec3(outputHandles[2].getPos(),0));
+    poly.addVertex(glm::vec3(outputHandles[3].getPos(),0));
+    poly.close();
+    poly = poly.getResampledByCount(250);
+    
+    for(auto & p : poly){
+        mappingAid.addPoint(p, 1.);
+    }
+    mappingAid.closePointGroup();
+    
+    poly.clear();
+    poly.addVertex(glm::vec3(outputHandles[0].getPos(),0));
+    poly.addVertex(glm::vec3(outputHandles[2].getPos(),0));
+    poly.close();
+    poly = poly.getResampledByCount(120);
+    
+    for(auto & p : poly){
+        mappingAid.addPoint(p, 1.);
+    }
+    mappingAid.closePointGroup();
+    
+    poly.clear();
+    poly.addVertex(glm::vec3(outputHandles[3].getPos(),0));
+    poly.addVertex(glm::vec3(outputHandles[1].getPos(),0));
+    poly.close();
+    poly = poly.getResampledByCount(120);
+    
+    for(auto & p : poly){
+        mappingAid.addPoint(p, 1.);
+    }
+    mappingAid.closePointGroup();
+}
+
 // --- functions borrowed from ofxHomography ---
 // https://github.com/paulobarcelos/ofxHomography
 /*
@@ -558,6 +599,7 @@ void Zone::deserialize(ofJson & js){
     }
     updateMatrix();
     updateHandles();
+    createMappingAid();
 }
 
 
