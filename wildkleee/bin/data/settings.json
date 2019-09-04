@@ -8,9 +8,15 @@
                 "minED": "310"
             },
             "Entry": {
-                "resSpacing": "0.00456476"
+                "chanceRepeat": "9.41275",
+                "maxRepeat": "10",
+                "minRepeat": "2",
+                "repeatIndex": "0",
+                "resLaser": "0.005",
+                "resSpacing": "0.00456476",
+                "spacing": "0.5"
             },
-            "font": "2",
+            "font": "1",
             "masterColor": "0.930556, 0.938507, 1, 0.947938",
             "run": "1"
         }

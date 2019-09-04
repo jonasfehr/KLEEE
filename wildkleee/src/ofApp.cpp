@@ -178,6 +178,21 @@ void ofApp::draw(){
     
     ofSetColor(255);
     entry.draw(outputWindow);
+    
+    stringstream windowInfo;
+    //    windowInfo << " | DAC: " << dac.getDeviceID();
+    //    windowInfo << " | Syphon (i): " << syphonIn.getName();
+    //    windowInfo << " | numOfWalkers (up/down): " << walkers.size();
+    windowInfo << " | FPS: " << fixed << setprecision(1) << ofGetFrameRate();
+    //    windowInfo << " | " <<     ildaFrame.stats.pointCountInput << "/" <<     ildaFrame.stats.pointCountProcessed ;
+    windowInfo << " | - ";
+    windowInfo << entry.currentEntry.str() ;
+    windowInfo << "- |";
+
+
+    ofSetWindowTitle(windowInfo.str());
+
+
 
 }
 
