@@ -27,6 +27,7 @@ public:
     string name;
     
     void setup(string filename, bool isClosed = false){
+        outlines.clear();
         svg.load(filename);
         
         auto nameSplit = ofSplitString(filename, ".");

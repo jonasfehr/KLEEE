@@ -114,13 +114,18 @@ public:
         return words[currentWord];
     }
 
+    void changePath(string path){
+        for(auto & word : words){
+            word.second.setPath(path);
+        }
+    }
+    
     
     int currentWord;
     
-
-    
     map<int, ConnectedWord> words;
     
+    string path;
 };
 
 

@@ -30,6 +30,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
     void onResize();
+    void fontChanged(int & i);
     void zoneControlChanged(string & key);
     void guiSelectChanged(string & key);
 
@@ -69,8 +70,13 @@ class ofApp : public ofBaseApp{
     ofImage haus;
     
     ofParameter<bool> run{"run", false};
+    ofParameter<int> font{"font", 1, 0, 4};
+
     ofParameterGroup parameters;
 
     ofParameter<bool> showMappingAid{"showMappingAid", false};
     ofParameterGroup parametersMapping{"Mapping", showMappingAid};
+    
+    string fontNames[5] = {"debug", "martina", "iwantto", "iwantto_2", "costaparadiso"};
+
 };

@@ -105,7 +105,7 @@ public:
         // send points to the DAC
         if(isActivated && dacIsConnected) dac->setPoints(ildaFrame);
         
-//        if(dac != NULL) dac->update();
+        if(dac != NULL) dac->update();
     }
     
     

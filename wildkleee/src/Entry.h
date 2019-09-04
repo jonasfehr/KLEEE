@@ -27,6 +27,8 @@ public:
         currentZone = pZones->at(zIndex);
         
         processedWords.clear();
+    
+//        vector<unique_ptr<ConnectedWord>> newEntry;
         
         float zoneNL = currentZone->getNormLength();
         float sumNL = 0;
@@ -41,9 +43,15 @@ public:
             }
             sumNL += cW.getNormLength();
             sumNL+=spacing; // space between Words
+            processedWord.word = cW.word;
             processedWords.push_back(processedWord);
         }
         sumNL-=spacing;
+        
+        if(processedWords.back().word == "TO"){
+            processedWords.pop_back();
+            sumNL -= words[2].getNormLength();
+        }
         
         processedWords.push_back(*new ProcessedWord()); // to create break after an entry
 
@@ -66,7 +74,7 @@ public:
                 for(auto & point : poly){
                     point = currentZone->map(point);
                 }
-                poly = poly.getResampledBySpacing(resSpacing);
+                poly = poly.getResampledBySpacing(resSpacing.get());
                 for(auto & point : poly){
                     pW.contentPoints.addPoint(point, 1.);
                 }
@@ -74,7 +82,6 @@ public:
             }
         }
     }
-    
     
     void draw(ofRectangle rect){
         ofPushMatrix();
@@ -110,6 +117,7 @@ public:
     struct ProcessedWord{
         vector<ofPolyline> polys;
         ContentBase contentPoints;
+        string word;
     };
     
     vector<ProcessedWord> processedWords;

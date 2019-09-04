@@ -16,18 +16,25 @@ class ConnectedWord{
 public:
     ConnectedWord(){};
     
-    ConnectedWord(string word, int enumWord){
+    ConnectedWord(string word, int enumWord, string path = "fonts/debug/"){
         this->word = word;
         this->enumWord = enumWord;
         if(word == "\n" ) return;
-        string path = "Text/"+word+".svg";
-        this->svgLoader.setup(path);
+        setPath(path);
+        isDirty = true;
     }
     
     float getNormLength(){
-        ofRectangle boundingBox = svgLoader.getBoundingBox();
-        return boundingBox.getWidth()/boundingBox.getHeight();
+        if(isDirty) calculateNormLength();
+        return normLength;
     }
+    
+    void calculateNormLength(){
+        ofRectangle boundingBox = svgLoader.getBoundingBox();
+        normLength = boundingBox.getWidth()/boundingBox.getHeight();
+    }
+    
+    
     
     void addConnection(WC connection){
         connections.push_back(connection);
@@ -41,16 +48,23 @@ public:
         for(auto & c : connections){
             c.weight = c.weight/sumWeights;
         }
-        calculateFromTo();
+        calculateWeightRanges();
     }
     
-    void calculateFromTo(){
+    void calculateWeightRanges(){
         connections[0].from = 0;
         connections[0].to = connections[0].weight;
         for(int i = 1; i < connections.size(); i++){
             connections[i].from = connections[i-1].to;
             connections[i].to = connections[i].from + connections[i].weight;
         }
+    }
+    
+    void setPath(string path){
+        this->path = path;
+        if(word == "\n") return;
+        this->svgLoader.setup(path+word+".svg");
+        isDirty = true;
     }
     
     string getString(){
@@ -64,6 +78,11 @@ public:
     vector<WC> connections;
     
     SvgLoader svgLoader;
+    
+    float normLength;
+    bool isDirty;
+    
+    string path;
 };
 
 #endif /* Word_h */

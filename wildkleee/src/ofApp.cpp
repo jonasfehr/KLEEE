@@ -39,14 +39,23 @@ void ofApp::setup(){
     
     parameters.setName("Runtime");
     parameters.add(run);
+    parameters.add(font);
     parameters.add(projector->ildaFrame.params.output.masterColor);
     parameters.add(brownianRythm.parameters);
     parameters.add(entry.parameters);
+    font.addListener( this, &ofApp::fontChanged);
 
     loadFromFile("settings.json");
     
     entry.setup(zones);
+    
+    int fontIndex = font.get();
+    fontChanged(fontIndex);
 
+}
+void ofApp::fontChanged(int & i){
+    string path = "fonts/" + fontNames[i] + "/";
+    entry.changePath(path);
 }
 
 void ofApp::zoneControlChanged(string & key){
@@ -208,7 +217,9 @@ void ofApp::loadFromFile(const std::string& filename){
     }
     projector->deserialize(js["Projector"]);
     ofDeserialize(js["Parameters"], parameters);
-
+    
+    string guiKey = mainPages.getKey();
+    guiSelectChanged(guiKey);
 
 
 }
