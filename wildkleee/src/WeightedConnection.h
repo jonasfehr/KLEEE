@@ -10,14 +10,17 @@
 
 class WC{ // weighted Connection
 public:
-    WC(int next, float w){
-        this->connectedWord = next;
-        this->weight = w;
+    WC(int connectedWordEnum, float weight){
+        this->connectedWordEnum = connectedWordEnum;
+        this->weight = weight;
     }
     
-    int connectedWord;
-    float weight;
+    int getConnected(){ return connectedWordEnum; }
     
+    int connectedWordEnum;
+    float weight;
+    float weightNormalised;
+
     float from;
     float to;
 };

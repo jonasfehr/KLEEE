@@ -16,28 +16,16 @@ class ConnectedWord{
 public:
     ConnectedWord(){};
     
-    ConnectedWord(string word, int enumWord, string path = "fonts/debug/"){
+    ConnectedWord(string word, int index){
         this->word = word;
-        this->enumWord = enumWord;
-        if(word == "\n" ) return;
-        setPath(path);
-        isDirty = true;
+        this->index = index;
     }
     
-    float getNormLength(){
-        if(isDirty) calculateNormLength();
-        return normLength;
-    }
-    
-    void calculateNormLength(){
-        ofRectangle boundingBox = svgLoader.getBoundingBox();
-        normLength = boundingBox.getWidth()/boundingBox.getHeight();
-    }
-    
-    
+
     
     void addConnection(WC connection){
         connections.push_back(connection);
+        normalizeWeights();
     }
     
     void normalizeWeights(){
@@ -46,43 +34,42 @@ public:
             sumWeights += c.weight;
         }
         for(auto & c : connections){
-            c.weight = c.weight/sumWeights;
+            c.weightNormalised = c.weight/sumWeights;
         }
         calculateWeightRanges();
     }
     
     void calculateWeightRanges(){
         connections[0].from = 0;
-        connections[0].to = connections[0].weight;
+        connections[0].to = connections[0].weightNormalised;
         for(int i = 1; i < connections.size(); i++){
             connections[i].from = connections[i-1].to;
-            connections[i].to = connections[i].from + connections[i].weight;
+            connections[i].to = connections[i].from + connections[i].weightNormalised;
         }
-    }
-    
-    void setPath(string path){
-        this->path = path;
-        if(word == "\n") return;
-        this->svgLoader.setup(path+word+".svg");
-        isDirty = true;
     }
     
     string getString(){
         return word;
     }
     
+    int getAdjacentWordIndex(){
+        float rndF = ofRandom(0., 1.);
+        for(auto & c : connections){
+            if(c.from < rndF && c.to > rndF){
+                return c.getConnected();
+            }
+        }
+        return ;
+    }
+    
+    
     vector<WC> & getConnections(){ return connections; }
     
+    
     string word;
-    int enumWord;
+    int index;
+    
     vector<WC> connections;
-    
-    SvgLoader svgLoader;
-    
-    float normLength;
-    bool isDirty;
-    
-    string path;
 };
 
 #endif /* Word_h */

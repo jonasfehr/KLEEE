@@ -42,20 +42,25 @@ void ofApp::setup(){
     parameters.add(font);
     parameters.add(projector->ildaFrame.params.output.masterColor);
     parameters.add(brownianRythm.parameters);
-    parameters.add(entry.parameters);
+    parameters.add(laserFrame.parameters);
+//    parameters.add(entry.parameters);
     font.addListener( this, &ofApp::fontChanged);
+    
+    sync.setup(parameters,8888,"localhost",8889);
+
 
     loadFromFile("settings.json");
     
-    entry.setup(zones);
-    
+//    entry.setup(zones);
+    laserFrame.setup(zones);
+
     int fontIndex = font.get();
     fontChanged(fontIndex);
 
 }
 void ofApp::fontChanged(int & i){
     string path = "fonts/" + fontNames[i] + "/";
-    entry.changePath(path);
+    laserFrame.loadSvg(path);
 }
 
 void ofApp::zoneControlChanged(string & key){
@@ -104,7 +109,7 @@ void ofApp::onResize(){
     outputWindow.set(ofGetWidth()-outSide - 15, mainPagesRect.getHeight()+15, outSide, outSide);
     guiRect.set(15,mainPagesRect.getBottom()+10, controlWidth-10, ofGetHeight()/2-mainPagesRect.getHeight());
 
-    controlButtonsRect.set(guiRect.getLeft(), outputWindow.getTop()+outSide/2, 30, outSide/2);
+    controlButtonsRect.set(guiRect.getLeft(), outputWindow.getTop()+outSide*2/3, 30, outSide*2/3);
     zoneButtonsRect.set(controlButtonsRect.getRight(), controlButtonsRect.getTop(), 200-30, guiRect.getHeight());
 
 
@@ -116,15 +121,19 @@ void ofApp::update(){
     if(brownianRythm.update()){
         int index = zoneSelector.getIndex();
         if(index == -1) return;
-        //        ss << iwtss.getNextString() << " ";
-        entry.next();
+        laserFrame.newFrame();
+//        cout << laserFrame.getCombinationString() << endl;
+
     }
     
     projector->clearPoints();
     if(run){
-        for(auto & pointGroup : entry.getPointGroups()){
+        for(auto & pointGroup : laserFrame.getPointGroups()){
             projector->addPointGroup(pointGroup);
         }
+//        for(auto & pointGroup : entry_2.getPointGroups()){
+//            projector->addPointGroup(pointGroup);
+//        }
     }
     if(showMappingAid){
         projector->clearPoints();
@@ -133,6 +142,16 @@ void ofApp::update(){
         }
     }
     projector->update();
+    
+    sync.update();
+    // SEND WATCHDOG
+    if(ofGetFrameNum()%60==0){
+        ofxOscMessage m;
+        m.setAddress("/watchdog");
+        m.addIntArg(1);
+        sync.sender.sendMessage(m, false);
+    }
+    
 }
 
 //--------------------------------------------------------------
@@ -177,7 +196,7 @@ void ofApp::draw(){
     ofDrawBitmapString(ss.str(), 30,30);
     
     ofSetColor(255);
-    entry.draw(outputWindow);
+    laserFrame.draw(outputWindow);
     
     stringstream windowInfo;
     //    windowInfo << " | DAC: " << dac.getDeviceID();
@@ -186,7 +205,7 @@ void ofApp::draw(){
     windowInfo << " | FPS: " << fixed << setprecision(1) << ofGetFrameRate();
     //    windowInfo << " | " <<     ildaFrame.stats.pointCountInput << "/" <<     ildaFrame.stats.pointCountProcessed ;
     windowInfo << " | - ";
-    windowInfo << entry.currentEntry.str() ;
+    windowInfo << laserFrame.getCombinationString();
     windowInfo << "- |";
 
 
@@ -208,7 +227,8 @@ void ofApp::keyPressed(int key){
 }
 
 void ofApp::saveToFile(const std::string& filename){
-    ofJson js = ofLoadJson(filename);
+    ofJson js;// = ofLoadJson(filename);
+    
     for(auto & zone : zones){
         zone->serialize(js["Zones"][zone->getKey()]);
     }

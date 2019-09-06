@@ -1,6 +1,7 @@
 ofxGui
 ofxIlda
 ofxJsonUtils
+ofxOsc
 ofxRayComposer
 ofxSelectableObject
 ofxSvg

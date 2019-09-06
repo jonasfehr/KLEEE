@@ -12,6 +12,9 @@
 #include "Segmentator.hpp"
 
 
+// ofxILDA on dev branch
+// ofxRayComposer on master
+
 class ofApp : public ofBaseApp{
 public:
     

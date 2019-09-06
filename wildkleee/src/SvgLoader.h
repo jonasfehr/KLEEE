@@ -43,7 +43,7 @@ public:
         }
         
         
-        // Normalize
+        // Normalize with normalised height
         for(auto & line : outlines){
             line.setClosed(isClosed);
             for(auto & p : line){
@@ -56,6 +56,10 @@ public:
         for(auto & poly : outlines){
             boundingBox.growToInclude(poly.getBoundingBox());
         }
+        
+        
+        // calculate normLength -> length with normalised hight;
+            normLength = boundingBox.getWidth()/boundingBox.getHeight();
     }
     
     void draw(int x, int y, int w, int h){
@@ -106,10 +110,18 @@ public:
         return boundingBox;
     }
     
+    float getNormLength(){
+        return normLength;
+    }
+    
+    
 //private:
     ofxSVG svg;
     vector<ofPolyline> outlines;
     ofRectangle boundingBox;
+    
+    float normLength;
+    bool isDirty;
 
 };
 

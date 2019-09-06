@@ -5,10 +5,11 @@
 #include "BrownianRythm.h"
 #include "Zone.hpp"
 #include "ofxSelectableObjects.hpp"
-#include "Entry.h"
 #include "LaserProjector_new.hpp"
+#include "LaserFrame.h"
 #include "ofxRayComposer.h"
 #include "ofxGui.h"
+#include "ofxOscParameterSync.h"
 
 class ofApp : public ofBaseApp{
 
@@ -59,7 +60,9 @@ class ofApp : public ofBaseApp{
 
     stringstream ss;
     
-    Entry entry;
+//    Entry entry;
+    LaserFrame laserFrame;
+
     
     ofxRayComposer::Handler rcHandler;
     unique_ptr<LaserProjector_new> projector;
@@ -70,13 +73,14 @@ class ofApp : public ofBaseApp{
     ofImage haus;
     
     ofParameter<bool> run{"run", false};
-    ofParameter<int> font{"font", 1, 0, 4};
+    ofParameter<int> font{"font", 1, 0, 3};
 
     ofParameterGroup parameters;
 
     ofParameter<bool> showMappingAid{"showMappingAid", false};
     ofParameterGroup parametersMapping{"Mapping", showMappingAid};
     
-    string fontNames[5] = {"debug", "martina", "iwantto", "iwantto_2", "costaparadiso"};
+    string fontNames[5] = {"debug", "martina", "iwantto_2", "costaparadiso"};
+    ofxOscParameterSync sync;
 
 };
