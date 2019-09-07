@@ -15,12 +15,12 @@ void ofApp::setup(){
     ofAddListener(controlButtons.keyActivatedE, this, &ofApp::zoneControlChanged);
     
     zoneSelector.setup(zoneButtonsRect, ST_RADIO, true);
-//    ofAddListener(zoneSelector.keyActivatedE, this, &ofApp::zoneControlChanged);
+    //    ofAddListener(zoneSelector.keyActivatedE, this, &ofApp::zoneControlChanged);
     
     rcHandler.setup();
     
     vector<string> deviceIDs = rcHandler.getListOfDeviceIDs();
-
+    
     if(deviceIDs.size()==0) deviceIDs.push_back("notSet");
     projector = make_unique<LaserProjector_new>("Projector", deviceIDs[0], rcHandler);
     mainPages.setup(mainPagesRect, ST_RADIO, false, 150 );
@@ -28,11 +28,11 @@ void ofApp::setup(){
     mainPages.add(*projector);
     mainPages.add(*new SelectableObjectBase("Zones"));
     mainPages.select("Runtime");
-
+    
     ofAddListener(mainPages.keyActivatedE, this, &ofApp::guiSelectChanged);
-
+    
     gui.setup("GUI", "settings.json", guiRect.getLeft(), guiRect.getTop());
-
+    
     haus.load("haus.png");
     haus.resize(outputWindow.getWidth(),outputWindow.getHeight());
     haus.update();
@@ -43,20 +43,20 @@ void ofApp::setup(){
     parameters.add(projector->ildaFrame.params.output.masterColor);
     parameters.add(brownianRythm.parameters);
     parameters.add(laserFrame.parameters);
-//    parameters.add(entry.parameters);
+    //    parameters.add(entry.parameters);
     font.addListener( this, &ofApp::fontChanged);
     
     sync.setup(parameters,8888,"localhost",8889);
-
-
+    
+    
     loadFromFile("settings.json");
     
-//    entry.setup(zones);
+    //    entry.setup(zones);
     laserFrame.setup(zones);
-
+    
     int fontIndex = font.get();
     fontChanged(fontIndex);
-
+    
 }
 void ofApp::fontChanged(int & i){
     string path = "fonts/" + fontNames[i] + "/";
@@ -78,9 +78,6 @@ void ofApp::zoneControlChanged(string & key){
     if(key == "Projector"){
         
     }
-    
-//    int index =  zoneSelector.getIndexFromKey(key);
-//    cout << zones[index]->getNormLength() << endl;
 }
 
 void ofApp::guiSelectChanged(string & key){
@@ -105,14 +102,14 @@ void ofApp::onResize(){
     mainPagesRect.set(10, 10, ofGetWidth(), 30);
     int outSide = ofGetHeight()-30-mainPagesRect.getHeight();
     int controlWidth = ofGetWidth()-outSide;
-
+    
     outputWindow.set(ofGetWidth()-outSide - 15, mainPagesRect.getHeight()+15, outSide, outSide);
     guiRect.set(15,mainPagesRect.getBottom()+10, controlWidth-10, ofGetHeight()/2-mainPagesRect.getHeight());
-
+    
     controlButtonsRect.set(guiRect.getLeft(), outputWindow.getTop()+outSide*2/3, 30, outSide*2/3);
     zoneButtonsRect.set(controlButtonsRect.getRight(), controlButtonsRect.getTop(), 200-30, guiRect.getHeight());
-
-
+    
+    
 }
 
 
@@ -122,8 +119,12 @@ void ofApp::update(){
         int index = zoneSelector.getIndex();
         if(index == -1) return;
         laserFrame.newFrame();
-//        cout << laserFrame.getCombinationString() << endl;
-
+        
+        // SEND New Word
+        ofxOscMessage m;
+        m.setAddress("/newWord");
+        m.addIntArg(1);
+        sync.sender.sendMessage(m, false);
     }
     
     projector->clearPoints();
@@ -131,9 +132,9 @@ void ofApp::update(){
         for(auto & pointGroup : laserFrame.getPointGroups()){
             projector->addPointGroup(pointGroup);
         }
-//        for(auto & pointGroup : entry_2.getPointGroups()){
-//            projector->addPointGroup(pointGroup);
-//        }
+        //        for(auto & pointGroup : entry_2.getPointGroups()){
+        //            projector->addPointGroup(pointGroup);
+        //        }
     }
     if(showMappingAid){
         projector->clearPoints();
@@ -157,18 +158,18 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(50);
-
+    
     // Draw in and output
     ofSetColor(0);
     ofDrawRectangle(outputWindow);
     
     ofSetColor(100,100,120);
     haus.draw(outputWindow.getTopLeft());
-
+    
     // Control
     ofSetColor(255);
     mainPages.draw();
-
+    
     string key = mainPages.getKey();
     if(key == "Runtime"){
         gui.draw();
@@ -184,12 +185,12 @@ void ofApp::draw(){
     }
     
     projector->draw(outputWindow);
-
-
     
     
-
-
+    
+    
+    
+    
     // draw String
     ofSetColor(255);
     string ssStr = ss.str();
@@ -207,12 +208,12 @@ void ofApp::draw(){
     windowInfo << " | - ";
     windowInfo << laserFrame.getCombinationString();
     windowInfo << "- |";
-
-
+    
+    
     ofSetWindowTitle(windowInfo.str());
-
-
-
+    
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -223,7 +224,7 @@ void ofApp::keyPressed(int key){
     if(key == 'l'){
         loadFromFile("settings.json");
     }
-
+    
 }
 
 void ofApp::saveToFile(const std::string& filename){
@@ -234,7 +235,7 @@ void ofApp::saveToFile(const std::string& filename){
     }
     projector->serialize(js["Projector"]);
     ofSerialize(js["Parameters"], parameters);
-
+    
     ofSavePrettyJson(filename, js);
     
 }
@@ -248,51 +249,51 @@ void ofApp::loadFromFile(const std::string& filename){
         zones.push_back(make_unique<Zone>(key, &inputWindow, &outputWindow));
         zoneSelector.add(*zones.back());
         zones.back()->deserialize(zoneJs);
-
+        
     }
     projector->deserialize(js["Projector"]);
     ofDeserialize(js["Parameters"], parameters);
     
     string guiKey = mainPages.getKey();
     guiSelectChanged(guiKey);
-
-
+    
+    
 }
 
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseEntered(int x, int y){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseExited(int x, int y){
-
+    
 }
 
 //--------------------------------------------------------------
@@ -302,10 +303,11 @@ void ofApp::windowResized(int w, int h){
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
-
+    
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
+void ofApp::dragEvent(ofDragInfo dragInfo){
+    
 }
+
