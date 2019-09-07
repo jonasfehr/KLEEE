@@ -4,16 +4,35 @@
             "BrownianRythm": {
                 "EDval": "12",
                 "brownFactor": "0.01",
-                "maxED": "671",
-                "minED": "310"
+                "maxED": "2500",
+                "minED": "150"
             },
-            "Entry": {
-                "chanceRepeat": "9.41275",
-                "maxRepeat": "10",
-                "minRepeat": "2",
-                "repeatIndex": "0",
+            "Laser": {
+                "Draw_finalPoints": "1",
+                "Draw_moveInBlack": "1",
+                "LASER_PPSx1000": "25",
+                "blackMoveMinDist": "0.01",
+                "end_Count": "4",
+                "end_blanks": "0",
+                "flipX": "0",
+                "flipY": "0",
+                "galvoCorrection": "0",
+                "isActivated": "0",
+                "masterColor": "0.930556, 0.938507, 1, 0.947938",
+                "showSquare": "0",
+                "start_Blanks": "7",
+                "start_Count": "0"
+            },
+            "LaserFrame": {
+                "chanceRepeat": "30.2374",
+                "chanceToExtend": "41.691",
+                "chanceToShorten": "42.2116",
+                "maxRepeat": "20",
+                "minRepeat": "5",
+                "numOfWords": "1",
+                "oneZoneOneWord": "0",
+                "repeatIndex": "12",
                 "resLaser": "0.005",
-                "resSpacing": "0.00456476",
                 "spacing": "0.5"
             },
             "font": "1",
@@ -23,13 +42,10 @@
     },
     "Projector": {
         "Laser": {
-            "Draw_InputPoints": "1",
             "Draw_finalPoints": "1",
-            "Draw_moveInBalc__red_": "1",
             "Draw_moveInBlack": "1",
             "LASER_PPSx1000": "25",
             "blackMoveMinDist": "0.01",
-            "end_Blanks": "0",
             "end_Count": "4",
             "end_blanks": "0",
             "flipX": "0",
@@ -41,7 +57,7 @@
             "start_Blanks": "7",
             "start_Count": "0"
         },
-        "deviceID": "RayComposer NET 2131"
+        "deviceID": "RayComposer USB 8309"
     },
     "Zones": {
         "Zone_0": {

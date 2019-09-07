@@ -43,6 +43,8 @@ void ofApp::setup(){
     parameters.add(projector->ildaFrame.params.output.masterColor);
     parameters.add(brownianRythm.parameters);
     parameters.add(laserFrame.parameters);
+    parameters.add(projector->parameters);
+    
     //    parameters.add(entry.parameters);
     font.addListener( this, &ofApp::fontChanged);
     
