@@ -14,7 +14,7 @@
 
 class LaserFrame : public I_want_to_say_something{
 public:
-    void setup(vector<shared_ptr<Zone>> &zones, string path = "fonts/debug/"){
+    void setup(vector<shared_ptr<Zone>> &zones, string path = "fonts/martina/"){
         this->pZones = &zones;
         
         I_want_to_say_something::setup();
