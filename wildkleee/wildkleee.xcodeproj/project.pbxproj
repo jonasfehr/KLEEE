@@ -31,16 +31,21 @@
 		B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECF8674C7975F1063C5E30CA /* ofxGuiGroup.cpp */; };
 		B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 802251BAF1B35B1D67B32FD0 /* ofxSliderGroup.cpp */; };
 		B88A57B4B0BA6191EF3571E9 /* ofxSvg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9E16009E1772C6D00B20013 /* ofxSvg.cpp */; };
-		C2673B6C28069702850D0859 /* librcdev.1.6.0.dylib in Sources */ = {isa = PBXBuildFile; fileRef = FE2C1D2DEB243768E6FED7DF /* librcdev.1.6.0.dylib */; };
+		03F8F24B6BDE505DF451CB99 /* ofxSvgUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8E3886C99D9FFE4160C7C6D7 /* ofxSvgUtils.cpp */; };
+		EBF52F2598CF649FAD4E928B /* ofxSvgGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 29A2621232AE0AF13FAED887 /* ofxSvgGroup.cpp */; };
+		142AF4C14554E45602FC6E1B /* ofxSvgFontBook.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1026178A3C63A60B799CB583 /* ofxSvgFontBook.cpp */; };
+		F4A8FD7CDBB12B1D5A3C5657 /* ofxSvgElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3489847107592D1AF294EBD8 /* ofxSvgElements.cpp */; };
+		A256F8DACD3C35F50D2DB1B7 /* ofxSvgCss.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AEA4FDAB391C8CC5A524AE2 /* ofxSvgCss.cpp */; };
 		C4782ECC372420ACE0615B74 /* OscPrintReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC8881B3C8C0A1C45F042E7A /* OscPrintReceivedElements.cpp */; };
 		C93D2C465EE6F11F23096DDF /* SelectableObjectBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BEB00F52A9BC117F4BD928D /* SelectableObjectBase.cpp */; };
 		D0AC116B40FD527C09256834 /* ofxRayComposerHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2247C5969A5AB2742088D6C5 /* ofxRayComposerHandler.cpp */; };
 		D580C72C1A5593332A254C86 /* ofxRayComposerInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7763B1F1F1F4B553ACEB4514 /* ofxRayComposerInterface.cpp */; };
-		DD6A1A9D2322C224005F5F34 /* librcdev.1.6.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FE2C1D2DEB243768E6FED7DF /* librcdev.1.6.0.dylib */; };
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
 		F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */; };
 		F553C136E04C8EF312E3F377 /* ContentBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B27FB66430C15253CF7486 /* ContentBase.cpp */; };
+		FF627F8E233B810F00703E74 /* librcdev.1.6.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FF627F8D233B810E00703E74 /* librcdev.1.6.0.dylib */; settings = {ATTRIBUTES = (Required, ); }; };
+		FF627F91233B817B00703E74 /* librcdev.1.6.0.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = FF627F8D233B810E00703E74 /* librcdev.1.6.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,6 +55,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				FF627F91233B817B00703E74 /* librcdev.1.6.0.dylib in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +179,16 @@
 		B72EB06DDA9EA14A44BD9D87 /* ofxJsonUtilsSetting.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxJsonUtilsSetting.h; path = ../../../addons/ofxJsonUtils/src/ofxJsonUtilsSetting.h; sourceTree = SOURCE_ROOT; };
 		B87C60311EC1FE841C1ECD89 /* ofxLabel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxLabel.h; path = ../../../addons/ofxGui/src/ofxLabel.h; sourceTree = SOURCE_ROOT; };
 		B9E16009E1772C6D00B20013 /* ofxSvg.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ofxSvg.cpp; path = ../../../addons/ofxSvg/src/ofxSvg.cpp; sourceTree = SOURCE_ROOT; };
+		51DB4E1ED7A50012FF2B6EFA /* ofxSvgUtils.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxSvgUtils.h; path = ../../../addons/ofxSvg/src/ofxSvgUtils.h; sourceTree = SOURCE_ROOT; };
+		8E3886C99D9FFE4160C7C6D7 /* ofxSvgUtils.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ofxSvgUtils.cpp; path = ../../../addons/ofxSvg/src/ofxSvgUtils.cpp; sourceTree = SOURCE_ROOT; };
+		D06B9B01E74E3E6E4460E420 /* ofxSvgGroup.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxSvgGroup.h; path = ../../../addons/ofxSvg/src/ofxSvgGroup.h; sourceTree = SOURCE_ROOT; };
+		29A2621232AE0AF13FAED887 /* ofxSvgGroup.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ofxSvgGroup.cpp; path = ../../../addons/ofxSvg/src/ofxSvgGroup.cpp; sourceTree = SOURCE_ROOT; };
+		20782B7CB47A021B568C2764 /* ofxSvgFontBook.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxSvgFontBook.h; path = ../../../addons/ofxSvg/src/ofxSvgFontBook.h; sourceTree = SOURCE_ROOT; };
+		1026178A3C63A60B799CB583 /* ofxSvgFontBook.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ofxSvgFontBook.cpp; path = ../../../addons/ofxSvg/src/ofxSvgFontBook.cpp; sourceTree = SOURCE_ROOT; };
+		5F2DAEFB0D31424161FF390B /* ofxSvgElements.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxSvgElements.h; path = ../../../addons/ofxSvg/src/ofxSvgElements.h; sourceTree = SOURCE_ROOT; };
+		3489847107592D1AF294EBD8 /* ofxSvgElements.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ofxSvgElements.cpp; path = ../../../addons/ofxSvg/src/ofxSvgElements.cpp; sourceTree = SOURCE_ROOT; };
+		BB064EC86806003793AE554C /* ofxSvgCss.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxSvgCss.h; path = ../../../addons/ofxSvg/src/ofxSvgCss.h; sourceTree = SOURCE_ROOT; };
+		8AEA4FDAB391C8CC5A524AE2 /* ofxSvgCss.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ofxSvgCss.cpp; path = ../../../addons/ofxSvg/src/ofxSvgCss.cpp; sourceTree = SOURCE_ROOT; };
 		BA274EC7A169D538BD43A5D8 /* ofxGuiUtils.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxGuiUtils.h; path = ../../../addons/ofxGui/src/ofxGuiUtils.h; sourceTree = SOURCE_ROOT; };
 		BC8881B3C8C0A1C45F042E7A /* OscPrintReceivedElements.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OscPrintReceivedElements.cpp; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscPrintReceivedElements.cpp; sourceTree = SOURCE_ROOT; };
 		C04B2B5BE9E9B76000BF9973 /* xlink.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = xlink.h; path = ../../../addons/ofxSvg/libs/libxml2/include/libxml/xlink.h; sourceTree = SOURCE_ROOT; };
@@ -389,8 +405,9 @@
 		F9FBB3B7BDEC170F954A8F65 /* xmlerror.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = xmlerror.h; path = ../../../addons/ofxSvg/libs/libxml2/include/libxml/xmlerror.h; sourceTree = SOURCE_ROOT; };
 		FA446BFD54D392C20F1BA70B /* globals.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = globals.h; path = ../../../addons/ofxSvg/libs/libxml2/include/libxml/globals.h; sourceTree = SOURCE_ROOT; };
 		FC5C634A4B527258D4D0A96F /* ofxJsonUtilsCommon.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxJsonUtilsCommon.h; path = ../../../addons/ofxJsonUtils/src/ofxJsonUtilsCommon.h; sourceTree = SOURCE_ROOT; };
-		FE2C1D2DEB243768E6FED7DF /* librcdev.1.6.0.dylib */ = {isa = PBXFileReference; explicitFileType = file; fileEncoding = 4; name = librcdev.1.6.0.dylib; path = src/librcdev.1.6.0.dylib; sourceTree = SOURCE_ROOT; };
 		FE921E4A3C8B894297C911DD /* json.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = json.hpp; path = ../../../addons/ofxJsonUtils/libs/bbb/json/libs/nlohmann_json/src/json.hpp; sourceTree = SOURCE_ROOT; };
+		FF627F8B233B80ED00703E74 /* librcdev.1.6.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librcdev.1.6.0.dylib; path = "../../../addons/ofxRayComposer/api-lib/osx_x86_64/librcdev.1.6.0.dylib"; sourceTree = "<group>"; };
+		FF627F8D233B810E00703E74 /* librcdev.1.6.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librcdev.1.6.0.dylib; path = "../../../../addons/ofxRayComposer/api-lib/osx_x86_64/librcdev.1.6.0.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -398,7 +415,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD6A1A9D2322C224005F5F34 /* librcdev.1.6.0.dylib in Frameworks */,
+				FF627F8E233B810F00703E74 /* librcdev.1.6.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -763,6 +780,16 @@
 			isa = PBXGroup;
 			children = (
 				B9E16009E1772C6D00B20013 /* ofxSvg.cpp */,
+				51DB4E1ED7A50012FF2B6EFA /* ofxSvgUtils.h */,
+				8E3886C99D9FFE4160C7C6D7 /* ofxSvgUtils.cpp */,
+				D06B9B01E74E3E6E4460E420 /* ofxSvgGroup.h */,
+				29A2621232AE0AF13FAED887 /* ofxSvgGroup.cpp */,
+				20782B7CB47A021B568C2764 /* ofxSvgFontBook.h */,
+				1026178A3C63A60B799CB583 /* ofxSvgFontBook.cpp */,
+				5F2DAEFB0D31424161FF390B /* ofxSvgElements.h */,
+				3489847107592D1AF294EBD8 /* ofxSvgElements.cpp */,
+				BB064EC86806003793AE554C /* ofxSvgCss.h */,
+				8AEA4FDAB391C8CC5A524AE2 /* ofxSvgCss.cpp */,
 				E91F55DEDD14B7F4BACED9B4 /* ofxSvg.h */,
 			);
 			name = src;
@@ -774,13 +801,6 @@
 				EC37E97F76C60F65987FB6BC /* include */,
 			);
 			name = rcdev;
-			sourceTree = "<group>";
-		};
-		DD6A1A9C2322C224005F5F34 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		E42962AA2163EDD300A6A9E2 /* openFrameworks */ = {
@@ -1075,30 +1095,30 @@
 				BB4B014C10F69532006C3DED /* addons */,
 				6948EE371B920CB800B5AC1A /* local_addons */,
 				E4B69B5B0A3A1756003C02F2 /* wildkleeeDebug.app */,
-				DD6A1A9C2322C224005F5F34 /* Frameworks */,
+				FF627F88233B7FD900703E74 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FF627F8D233B810E00703E74 /* librcdev.1.6.0.dylib */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
-				8D991EA2763AE81CF063C6E8 /* SvgLoader.h */,
+				66B46D57199460108A00AD3E /* ContentBase.hpp */,
+				5250430BE3F5F10B8E7F7BEA /* WeightedConnection.h */,
+				1F460CA56A8192175A1944B9 /* Zone.cpp */,
 				1A87D537E869608EA25F5D95 /* LaserProjector_new.hpp */,
 				4A057A5AC0F8A1B881583DC6 /* LaserFrame.h */,
-				0411E44E2E7C4A1809F7161D /* I_want_to_say_something.h */,
-				5CC17C975F59EF7A3E2F40BC /* ConnectedWord.h */,
-				5250430BE3F5F10B8E7F7BEA /* WeightedConnection.h */,
-				F4B27FB66430C15253CF7486 /* ContentBase.cpp */,
-				66B46D57199460108A00AD3E /* ContentBase.hpp */,
 				8A725E211DB546B6223E1DA5 /* DragHandle.cpp */,
+				8D991EA2763AE81CF063C6E8 /* SvgLoader.h */,
+				0411E44E2E7C4A1809F7161D /* I_want_to_say_something.h */,
 				D0FCC35856D08382D774411F /* DragHandle.hpp */,
-				1F460CA56A8192175A1944B9 /* Zone.cpp */,
+				5CC17C975F59EF7A3E2F40BC /* ConnectedWord.h */,
+				F4B27FB66430C15253CF7486 /* ContentBase.cpp */,
 				CBE4FACCC0C6704219FBBBD5 /* Zone.hpp */,
 				243285EB0375C04B489C8E57 /* BrownianRythm.h */,
-				FE2C1D2DEB243768E6FED7DF /* librcdev.1.6.0.dylib */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1158,6 +1178,14 @@
 				3D94A3FAE7A0AA4DD0FAAC2B /* bbb */,
 			);
 			name = libs;
+			sourceTree = "<group>";
+		};
+		FF627F88233B7FD900703E74 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FF627F8B233B80ED00703E74 /* librcdev.1.6.0.dylib */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		FF8CDF57858E9B94E3237115 /* ip */ = {
@@ -1275,7 +1303,6 @@
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				306CCA0E3154FEC86CFC3F3E /* Zone.cpp in Sources */,
-				C2673B6C28069702850D0859 /* librcdev.1.6.0.dylib in Sources */,
 				34994164BF0313E215FFA28A /* DragHandle.cpp in Sources */,
 				F553C136E04C8EF312E3F377 /* ContentBase.cpp in Sources */,
 				856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */,
@@ -1305,6 +1332,11 @@
 				C93D2C465EE6F11F23096DDF /* SelectableObjectBase.cpp in Sources */,
 				7A7174A6CF7BA8B8A9190461 /* ofxSelectableObjects.cpp in Sources */,
 				B88A57B4B0BA6191EF3571E9 /* ofxSvg.cpp in Sources */,
+				03F8F24B6BDE505DF451CB99 /* ofxSvgUtils.cpp in Sources */,
+				EBF52F2598CF649FAD4E928B /* ofxSvgGroup.cpp in Sources */,
+				142AF4C14554E45602FC6E1B /* ofxSvgFontBook.cpp in Sources */,
+				F4A8FD7CDBB12B1D5A3C5657 /* ofxSvgElements.cpp in Sources */,
+				A256F8DACD3C35F50D2DB1B7 /* ofxSvgCss.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1444,9 +1476,7 @@
 				OTHER_LDFLAGS = (
 					"$(OF_CORE_LIBS)",
 					"$(OF_CORE_FRAMEWORKS)",
-					"$(LIB_OF)",
-					../../../addons/ofxSvg/libs/libxml2/lib/osx/xml2.a,
-					../../../addons/ofxSvg/libs/svgtiny/lib/osx/svgtiny.a,
+					"$(LIB_OF_RELEASE)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -1657,8 +1687,6 @@
 					"$(OF_CORE_LIBS)",
 					"$(OF_CORE_FRAMEWORKS)",
 					"$(LIB_OF_DEBUG)",
-					../../../addons/ofxSvg/libs/libxml2/lib/osx/xml2.a,
-					../../../addons/ofxSvg/libs/svgtiny/lib/osx/svgtiny.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)Debug";
 				WRAPPER_EXTENSION = app;
@@ -1726,9 +1754,7 @@
 				OTHER_LDFLAGS = (
 					"$(OF_CORE_LIBS)",
 					"$(OF_CORE_FRAMEWORKS)",
-					"$(LIB_OF)",
-					../../../addons/ofxSvg/libs/libxml2/lib/osx/xml2.a,
-					../../../addons/ofxSvg/libs/svgtiny/lib/osx/svgtiny.a,
+					"$(LIB_OF_RELEASE)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;

@@ -65,7 +65,8 @@ class ofApp : public ofBaseApp{
 
     
     ofxRayComposer::Handler rcHandler;
-    unique_ptr<LaserProjector_new> projector;
+    shared_ptr<LaserProjector_new> projector;
+    ofxOscSender oscSender;
     
     
     ofxPanel gui;

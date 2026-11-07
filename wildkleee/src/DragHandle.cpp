@@ -122,7 +122,7 @@ void DragHandle::removeListeners(){
 
     }
 
-bool DragHandle::mousePressed(ofMouseEventArgs &e){
+void DragHandle::mousePressed(ofMouseEventArgs &e){
     
     glm::vec2 mousePoint = e;
 
@@ -138,7 +138,7 @@ bool DragHandle::mousePressed(ofMouseEventArgs &e){
     }
 }
 
-bool DragHandle::mouseDragged(ofMouseEventArgs &e){
+void DragHandle::mouseDragged(ofMouseEventArgs &e){
     glm::vec2 mousePoint = e;
     if(state == DRAG){
             glm::vec2 target = (normalisedFromWindow(mousePoint))  - clickOffset;
@@ -153,7 +153,7 @@ bool DragHandle::mouseDragged(ofMouseEventArgs &e){
 }
 
 
-bool DragHandle::mouseReleased(ofMouseEventArgs &e){
+void DragHandle::mouseReleased(ofMouseEventArgs &e){
     glm::vec2 mousePoint = e;
 
 //    if(hitTest(mousePoint)){
@@ -165,7 +165,7 @@ bool DragHandle::mouseReleased(ofMouseEventArgs &e){
 
 }
 
-bool DragHandle::keyPressed(ofKeyEventArgs &e){
+void DragHandle::keyPressed(ofKeyEventArgs &e){
     if(state == SELECTED){
         float jump = 0.01;
         if(e.key == OF_KEY_LEFT) pos.x -= jump * (ofGetKeyPressed(OF_KEY_SHIFT)? 0.1 : 1);

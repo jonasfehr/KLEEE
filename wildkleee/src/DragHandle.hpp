@@ -55,10 +55,10 @@ private:
     void initListeners();
     void removeListeners();
     
-    bool mousePressed(ofMouseEventArgs &e);
-    bool mouseDragged(ofMouseEventArgs &e);
-    bool mouseReleased(ofMouseEventArgs &e);
-    bool keyPressed(ofKeyEventArgs &e);
+    void mousePressed(ofMouseEventArgs &e);
+    void mouseDragged(ofMouseEventArgs &e);
+    void mouseReleased(ofMouseEventArgs &e);
+    void keyPressed(ofKeyEventArgs &e);
     
     bool hitTest(glm::vec2 hitpoint);
 

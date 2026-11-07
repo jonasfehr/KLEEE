@@ -59,7 +59,7 @@ public:
                 return c.getConnected();
             }
         }
-        return ;
+        return connections.empty() ? -1 : connections.back().getConnected();
     }
     
     

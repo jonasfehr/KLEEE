@@ -98,7 +98,13 @@ public:
         //            dacIsConnected = this->rcHandler->referenceInterface(dac, "test");
         //        }
         ildaFrame.clear();
-        ildaFrame.addPointGroups(pointGroups);
+        vector<ContentBase::PointGroup> groups;
+        groups.reserve(pointGroups.size());
+        for(auto & pG : pointGroups){
+            vector<ofxIlda::Point> p = pG;
+            groups.emplace_back(p);
+        }
+        ildaFrame.addPointGroups(groups);
         
         ildaFrame.update();
         
@@ -154,12 +160,12 @@ public:
     ofxPanel gui;
     ofParameter<bool> isActivated{"isActivated", false};
     //    ofParameter<bool> showTestPattern{"showTestPattern", false};
-    ofParameter<int> LASER_PPSx1000{"LASER_PPSx1000", 30, 0.1, 30};
+    ofParameter<int> LASER_PPSx1000{"LASER_PPSx1000", 30, 1, 30};
     ofParameter<bool> showCross{"showSquare", false};
     ofParameter<bool> flipX{"flipX", false};
     ofParameter<bool> flipY{"flipY", false};
     
-    ofParameterGroup parameters{"Laser", isActivated, LASER_PPSx1000, showCross, flipX, flipY, ildaFrame.params.output.galvoCorrection, ildaFrame.params.output.startBlanks, ildaFrame.params.output.startCount, ildaFrame.params.output.endCount, ildaFrame.params.output.endBlanks, ildaFrame.params.output.blackMoveMinDist, ildaFrame.params.output.masterColor, ildaFrame.params.draw.finalPoints, ildaFrame.params.draw.moveInBlack};
+    ofParameterGroup parameters{"Laser", isActivated, LASER_PPSx1000, showCross, flipX, flipY, ildaFrame.params.output.galvoMaxAngle, ildaFrame.params.output.galvoMirrorDist, ildaFrame.params.output.transform.scale, ildaFrame.params.output.startBlanks, ildaFrame.params.output.startDelay, ildaFrame.params.output.endCount, ildaFrame.params.output.endBlanks, ildaFrame.params.output.blackMoveMinDist, ildaFrame.params.output.masterColor, ildaFrame.params.draw.finalPoints, ildaFrame.params.draw.moveInBlack};
     
     
     

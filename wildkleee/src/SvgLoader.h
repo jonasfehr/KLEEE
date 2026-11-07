@@ -116,7 +116,7 @@ public:
     
     
 //private:
-    ofxSVG svg;
+    ofxSvg svg;
     vector<ofPolyline> outlines;
     ofRectangle boundingBox;
     

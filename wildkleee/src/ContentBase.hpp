@@ -12,10 +12,42 @@
 #include "ofMain.h"
 #include "ofxIldaPoint.h"
 
+// Types expected by ofxIlda (ofxIldaFrame / ofxIldaPolyProcessor)
+enum ContentType{
+    CT_UNDEFINED = -1,
+    CT_LINE,
+    CT_DOT,
+    CT_FLOW,
+    CT_CIRCLE,
+    CT_CONNECTEDLINES,
+    CT_CONNECTEDDOTS
+};
 
+enum ContentPriority{
+    CP_LOW,
+    CP_MID,
+    CP_HIGH
+};
 
 class ContentBase{
 public:
+    struct PointGroup{
+        PointGroup(){};
+        PointGroup(vector<ofxIlda::Point> &p, int projectorIdx = -1, ContentType type = CT_UNDEFINED, ContentPriority priority = CP_LOW){
+            points.swap(p);
+            this->projectorIndex = projectorIdx;
+            this->type = type;
+            this->priority = priority;
+        }
+        ofxIlda::Point & at(int i){ return points.at(i); }
+        int size(){ return points.size(); }
+
+        vector<ofxIlda::Point> points;
+        int projectorIndex = -1;
+        ContentType type = CT_UNDEFINED;
+        ContentPriority priority = CP_LOW;
+    };
+
     vector<ofxIlda::Point> points;
     vector<vector<ofxIlda::Point>> pointGroups;
 

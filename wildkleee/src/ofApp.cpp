@@ -10,8 +10,8 @@ void ofApp::setup(){
     
     
     controlButtons.setup(controlButtonsRect, ST_PRESSED, true, 30-10 );
-    controlButtons.add(*new SelectableObjectBase("plus", "icons/plus.png"));
-    controlButtons.add(*new SelectableObjectBase("minus", "icons/minus.png"));
+    controlButtons.add(make_shared<SelectableObjectBase>("plus", "icons/plus.png"));
+    controlButtons.add(make_shared<SelectableObjectBase>("minus", "icons/minus.png"));
     ofAddListener(controlButtons.keyActivatedE, this, &ofApp::zoneControlChanged);
     
     zoneSelector.setup(zoneButtonsRect, ST_RADIO, true);
@@ -22,11 +22,11 @@ void ofApp::setup(){
     vector<string> deviceIDs = rcHandler.getListOfDeviceIDs();
     
     if(deviceIDs.size()==0) deviceIDs.push_back("notSet");
-    projector = make_unique<LaserProjector_new>("Projector", deviceIDs[0], rcHandler);
+    projector = make_shared<LaserProjector_new>("Projector", deviceIDs[0], rcHandler);
     mainPages.setup(mainPagesRect, ST_RADIO, false, 150 );
-    mainPages.add(*new SelectableObjectBase("Runtime"));
-    mainPages.add(*projector);
-    mainPages.add(*new SelectableObjectBase("Zones"));
+    mainPages.add(make_shared<SelectableObjectBase>("Runtime"));
+    mainPages.add(projector);
+    mainPages.add(make_shared<SelectableObjectBase>("Zones"));
     mainPages.select("Runtime");
     
     ofAddListener(mainPages.keyActivatedE, this, &ofApp::guiSelectChanged);
@@ -49,6 +49,7 @@ void ofApp::setup(){
     font.addListener( this, &ofApp::fontChanged);
     
     sync.setup(parameters,8888,"localhost",8889);
+    oscSender.setup("localhost", 8889); // ofxOscParameterSync::sender is private now
     
     
     loadFromFile("settings.json");
@@ -67,8 +68,8 @@ void ofApp::fontChanged(int & i){
 
 void ofApp::zoneControlChanged(string & key){
     if(key == "plus") {
-        zones.push_back(make_unique<Zone>("Zone_"+ofToString(zoneSelector.size()), &inputWindow, &outputWindow));
-        zoneSelector.add(*zones.back());
+        zones.push_back(make_shared<Zone>("Zone_"+ofToString(zoneSelector.size()), &inputWindow, &outputWindow));
+        zoneSelector.add(zones.back());
     }
     if(key == "minus") {
         int index = zoneSelector.getIndex();
@@ -126,7 +127,7 @@ void ofApp::update(){
         ofxOscMessage m;
         m.setAddress("/newWord");
         m.addIntArg(1);
-        sync.sender.sendMessage(m, false);
+        oscSender.sendMessage(m, false);
     }
     
     projector->clearPoints();
@@ -152,7 +153,7 @@ void ofApp::update(){
         ofxOscMessage m;
         m.setAddress("/watchdog");
         m.addIntArg(1);
-        sync.sender.sendMessage(m, false);
+        oscSender.sendMessage(m, false);
     }
     
 }
@@ -248,8 +249,8 @@ void ofApp::loadFromFile(const std::string& filename){
     zones.clear();
     zoneSelector.clear();
     for (auto& [key, zoneJs] : js["Zones"].items()) {
-        zones.push_back(make_unique<Zone>(key, &inputWindow, &outputWindow));
-        zoneSelector.add(*zones.back());
+        zones.push_back(make_shared<Zone>(key, &inputWindow, &outputWindow));
+        zoneSelector.add(zones.back());
         zones.back()->deserialize(zoneJs);
         
     }
