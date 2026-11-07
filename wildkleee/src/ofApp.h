@@ -7,6 +7,7 @@
 #include "ofxSelectableObjects.hpp"
 #include "LaserProjector_new.hpp"
 #include "LaserFrame.h"
+#include "PonkOutput.h"
 #include "ofxRayComposer.h"
 #include "ofxGui.h"
 #include "ofxOscParameterSync.h"
@@ -17,6 +18,7 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
+		void exit();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -66,6 +68,7 @@ class ofApp : public ofBaseApp{
     
     ofxRayComposer::Handler rcHandler;
     shared_ptr<LaserProjector_new> projector;
+    PonkOutput ponk;
     ofxOscSender oscSender;
     
     

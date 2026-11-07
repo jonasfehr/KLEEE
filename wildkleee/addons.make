@@ -5,3 +5,4 @@ ofxOsc
 ofxRayComposer
 ofxSelectableObject
 ofxSvg
+ofxPonk

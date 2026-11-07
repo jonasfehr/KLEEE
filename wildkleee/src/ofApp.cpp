@@ -44,6 +44,7 @@ void ofApp::setup(){
     parameters.add(brownianRythm.parameters);
     parameters.add(laserFrame.parameters);
     parameters.add(projector->parameters);
+    parameters.add(ponk.parameters);
     
     //    parameters.add(entry.parameters);
     font.addListener( this, &ofApp::fontChanged);
@@ -87,6 +88,7 @@ void ofApp::guiSelectChanged(string & key){
     gui.clear();
     if(key == "Projector") {
         gui.add(projector->parameters);
+        gui.add(ponk.parameters);
     }
     if(key == "Runtime") {
         gui.add(parameters);
@@ -115,6 +117,14 @@ void ofApp::onResize(){
     
 }
 
+
+//--------------------------------------------------------------
+void ofApp::exit(){
+    // mainPages co-owns the projector (shared_ptr); release it here while rcHandler
+    // still exists, its destructor removes a listener from rcHandler's event.
+    mainPages.clear();
+    projector.reset();
+}
 
 //--------------------------------------------------------------
 void ofApp::update(){
@@ -146,7 +156,28 @@ void ofApp::update(){
         }
     }
     projector->update();
-    
+
+    // PONK: one stream per zone (zone-local) + one combined (mapped)
+    {
+        vector<string> zoneNames;
+        for(auto & zone : zones) zoneNames.push_back(zone->getKey());
+        ponk.begin(zoneNames);
+        ofColor color(projector->ildaFrame.params.output.masterColor.get());
+        if(showMappingAid){
+            int index = zoneSelector.getIndex();
+            if(index >= 0 && index < (int)zones.size()){
+                for(auto & pg : zones[index]->mappingAid.getPointGroups()){
+                    ofPolyline poly;
+                    for(auto & pt : pg) poly.addVertex(pt.x, pt.y);
+                    ponk.addCombined(poly, color);
+                }
+            }
+        } else if(run){
+            laserFrame.addToPonk(ponk, color);
+        }
+        ponk.send();
+    }
+
     sync.update();
     // SEND WATCHDOG
     if(ofGetFrameNum()%60==0){

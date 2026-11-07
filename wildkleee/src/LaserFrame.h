@@ -11,6 +11,7 @@
 #include "ContentBase.hpp"
 #include "Zone.hpp"
 #include "I_want_to_say_something.h"
+#include "PonkOutput.h"
 
 class LaserFrame : public I_want_to_say_something{
 public:
@@ -139,6 +140,11 @@ public:
         }
         
         
+        // keep the zone-local version for the per-zone Ponk streams
+        processedWord.localPolys = processedWord.polys;
+        processedWord.zoneKey = pCurrentZone->getKey();
+        processedWord.zoneNormLength = zoneNL;
+
         // MAP to Zone and add Points
         for(auto & poly : processedWord.polys){
             for(auto & point : poly){
@@ -188,11 +194,21 @@ public:
     }
     
     
+    void addToPonk(PonkOutput & ponk, const ofColor & color){
+        for(auto & pW : processedWords){
+            for(auto & poly : pW.localPolys) ponk.addZoneLocal(pW.zoneKey, poly, pW.zoneNormLength, color);
+            for(auto & poly : pW.polys) ponk.addCombined(poly, color);
+        }
+    }
+
     vector<shared_ptr<Zone>> *pZones;
     shared_ptr<Zone> pCurrentZone;
 
     struct ProcessedWord{
-        vector<ofPolyline> polys;
+        vector<ofPolyline> polys;       // mapped to output space (0..1)
+        vector<ofPolyline> localPolys;  // zone-local, before mapping
+        string zoneKey;
+        float zoneNormLength = 1;
         ContentBase contentBase;
     };
     
